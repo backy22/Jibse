@@ -6,11 +6,7 @@ import "hardhat/console.sol";
 
 contract Payment {
 
-    function payDeposit(uint256 _roomId) public {
-
-    }
-
-    function sendBackDeposit() public {
+    function payDeposit(uint256 _rentId) public {
 
     }
 
