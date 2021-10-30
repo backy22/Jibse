@@ -7,87 +7,111 @@ pragma solidity >=0.7.0 <0.9.0;
  * @dev manage rent lifecycle
  */
 contract Rent {
-
-    struct Place {
-        uint id;
-        address owner;
-        string location;
-    }
-    
-    struct Price {
-        uint price;
-        Currency currency;
-    }
-    
-    struct Contract {
-        uint placeId;
-        uint startDate;
-        uint endDate;
-        address tenant;
-        State state;
-        Frequency frequency;
-        Price price;
-    }
-    
-    Place[] places;
-    mapping(placeId, Contract[]) contractsByPlace;
-    mapping(address => Contract[]) contractsByAddress;
     
     enum State { Active, Locked, Accepted, Inactive }
-    enum Frequency { Weekly, BiWeekly, Monthly, Yearly }
-    enum Currency { ETH, DAI }
+    // enum Frequency { BiWeekly, Monthly, Yearly }
+    // enum Currency { ETH, DAI }
+    
+    // struct Price {
+    //    uint price;
+    //    Currency currency;
+    // }
+    
+    struct Contract {
+        uint startDate;
+        uint endDate;
+        address owner;
+        address tenant;
+        string location;
+        State state;
+        uint price;
+    }
+    
+    Contract[] contracts;
+    mapping(address => uint[]) contractsMap; // user => contract_index
     
     // event for EVM logging
-    event ChangeOwner(uint indexed placeId, address indexed oldOwner, address indexed newOwner);
     event ChangedContractState(uint indexed id, State indexed oldState, State indexed newState);
     
-    // modifier to check if caller is owner
-    modifier isOwner(uint placeId) {
-        require(msg.sender == places[placeId].owner, "Only owner can call this function.");
+    modifier isOwner(uint contractId) {
+        require(msg.sender == contracts[contractId].owner, "Only owner can call this function.");
         _;
     }
     
-    // modifier to check if caller is not owner
-    modifier isNotOwner(uint placeId)) {
-        require(msg.sender != places[placeId].owner, "Owner can't call this function.");
+    modifier isTenant(uint contractId) {
+        require(msg.sender == contracts[contractId].tenant, "Only tenant can call this function.");
         _;
     }
     
-    modifier isOwnerOrTenant(uint contractId) {
-        require(msg.sender == contracts[contractId].owner ||
-        msg.sender == contracts[contractId].tenent
-        , "Owner can't call this function.");
+    modifier inState(uint contractId, State state) {
+        require(state != contracts[contractId].state, "Contract is not in valid state.");
+        _;
+    }
+    
+    modifier isValidPrice(uint contractId) {
+        require(msg.value != contracts[contractId].price, "Price is incorrect.");
         _;
     }
     
     
-    /**
-     * @dev 
-     */
     constructor() {
     }
 
-    /**
-     * @dev Change owner
-     * @param newOwner address of new owner
-     */
-    function changeOwner(uint placeId, address newOwner) 
-        public 
-        isOwner(placeId) 
-    {
-        emit ChangeOwner(place_id, places[place_id].owner, newOwner);
-        places[place_id].owner = newOwner;
+    function addContract() external {
     }
 
-    /**
-     * @dev Return owner address 
-     * @return address of owner
-     */
-    function getContract(address sender) 
+    function getContracts(State state) 
         external 
-        isOwnerOrTenant(contractId)
         view 
-        returns (address) {
-        return contracts[contractId];
+        returns (Contract[] memory) {
+        
+        uint count = 0;
+        for(uint i=0; i<contracts.length; i++) {
+            if(contracts[i].state == state) {
+                count++;
+            }
+        }
+        
+        Contract[] memory result = new Contract[](count);
+        uint j = 0;
+        for(uint i=0; i<contracts.length; i++) {
+            if(contracts[i].state == state) {
+                result[j] = contracts[i];
+                j++;
+            }
+        }
+        
+        return result;
+    }
+    
+    function getContracts(address _address) 
+        external
+        view 
+        returns (Contract[] memory) {
+        uint[] memory addresses = contractsMap[_address];
+        Contract[] memory result = new Contract[](addresses.length);
+        
+        for(uint i=0; i<addresses.length; i++) {
+            result[i] = contracts[addresses[i]];
+        }
+        return result;
+    }
+    
+    function setUpAutoTransfer(uint contractId) 
+        external
+        isTenant(contractId)
+        inState(contractId, State.Accepted)
+        returns (bool)
+    {
+        return true;
+    }
+    
+    function pay(uint contractId)
+        external
+        isTenant(contractId)
+        inState(contractId, State.Accepted)
+        returns (bool)
+    {
+        return true;
     }
 }
