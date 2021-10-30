@@ -8,7 +8,12 @@ pragma solidity >=0.7.0 <0.9.0;
  */
 contract Rent {
     
-    enum State { Active, Locked, Accepted, Inactive }
+    enum State { 
+        Active, // A contract has been created by the owner, waiting for a tenant.
+        Locked, // The owner has chosen a tenant and is waiting to receive a deposit.
+        Accepted, // The tenent paid a deposit and the contract has successfully concluded.
+        Inactive // A contract has been removed by the owner's request.
+    }
     // enum Frequency { BiWeekly, Monthly, Yearly }
     // enum Currency { ETH, DAI }
     
@@ -28,10 +33,11 @@ contract Rent {
     }
     
     Contract[] contracts;
-    mapping(address => uint[]) contractsMap; // user => contract_index
+    mapping(address => uint[]) public contractMap; // user => contract_index
     
     // event for EVM logging
-    event ChangedContractState(uint indexed id, State indexed oldState, State indexed newState);
+    event ContractCreated(uint indexed id);
+    event ContractStateChanged(uint indexed id, State indexed oldState, State indexed newState);
     
     modifier isOwner(uint contractId) {
         require(msg.sender == contracts[contractId].owner, "Only owner can call this function.");
@@ -53,18 +59,39 @@ contract Rent {
         _;
     }
     
-    
     constructor() {
     }
-
-    function addContract() external {
+    
+    function addContract(
+        uint startDate,
+        uint endDate,
+        string calldata location,
+        uint price) 
+        external 
+    {
+        require(startDate < endDate  ||
+            endDate == 0, "End date should be null or later than start date.");
+        
+        uint id = contracts.length;
+        contracts.push(Contract({
+            owner: msg.sender,
+            tenant: address(0),
+            startDate: startDate,
+            endDate: endDate,
+            location: location,
+            price: price,
+            state: State.Active
+        }));
+        contractMap[msg.sender].push(id);
+        
+        emit ContractCreated(id);
     }
 
     function getContracts(State state) 
         external 
         view 
-        returns (Contract[] memory) {
-        
+        returns (Contract[] memory) 
+    {
         uint count = 0;
         for(uint i=0; i<contracts.length; i++) {
             if(contracts[i].state == state) {
@@ -87,8 +114,9 @@ contract Rent {
     function getContracts(address _address) 
         external
         view 
-        returns (Contract[] memory) {
-        uint[] memory addresses = contractsMap[_address];
+        returns (Contract[] memory) 
+    {
+        uint[] memory addresses = contractMap[_address];
         Contract[] memory result = new Contract[](addresses.length);
         
         for(uint i=0; i<addresses.length; i++) {
@@ -114,4 +142,5 @@ contract Rent {
     {
         return true;
     }
+    
 }
