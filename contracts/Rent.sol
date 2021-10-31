@@ -2,18 +2,13 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
+import "./IRent.sol";
 /**
  * @title Rent
  * @dev manage rent lifecycle
  */
-contract Rent {
+contract Rent is IRent {
     
-    enum State { 
-        Active, // A contract has been created by the owner, waiting for a tenant.
-        Locked, // The owner has chosen a tenant and is waiting to receive a deposit.
-        Succeeded, // The tenent paid a deposit and the contract has successfully concluded.
-        Inactive // A contract has been removed by the owner's request.
-    }
     // enum Frequency { BiWeekly, Monthly, Yearly }
     // enum Currency { ETH, DAI }
     
@@ -21,16 +16,6 @@ contract Rent {
     //    uint price;
     //    Currency currency;
     // }
-    
-    struct Contract {
-        uint startDate;
-        uint endDate;
-        address owner;
-        address tenant;
-        string location;
-        State state;
-        uint price;
-    }
     
     Contract[] contracts;
     mapping(address => uint[]) contractMap; // user address -> contract IDs
@@ -102,13 +87,16 @@ contract Rent {
     
     function getContractById(uint id) 
         external
+        override
         view
+        returns (Contract memory)
     {
         return contracts[id];
     }
 
     function getContractsByState(State state) 
         external 
+        override
         view 
         returns (Contract[] memory) 
     {
@@ -133,6 +121,7 @@ contract Rent {
     
     function getContractsByAddress(address _address) 
         external
+        override
         view 
         returns (Contract[] memory) 
     {
@@ -148,6 +137,7 @@ contract Rent {
     function acceptApplicant(uint contractId, address _address) 
         external
         isOwner(contractId)
+        override
     {
         contracts[contractId].state = State.Locked;
         contracts[contractId].tenant = _address;
@@ -160,6 +150,7 @@ contract Rent {
     
     function applyForContract(uint contractId)
         external
+        override
     {
         require(msg.sender != contracts[contractId].owner, "Owner can't apply.");
         applicantMap[contractId].push(msg.sender);
@@ -168,6 +159,7 @@ contract Rent {
     
     function getApplicants(uint contractId)
         external
+        override
         isOwner(contractId)
         view
         returns (address[] memory)
@@ -177,6 +169,7 @@ contract Rent {
     
     function payDeposit(uint contractId)
         external
+        override
         isTenant(contractId)
         inState(contractId, State.Locked)
         payable
