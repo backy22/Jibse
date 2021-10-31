@@ -168,7 +168,7 @@ contract Rent {
         return applicantMap[contractId];
     }
     
-    function payDeposit(uint contractId, uint price)
+    function payDeposit(uint contractId)
         external
         isTenant(contractId)
         inState(contractId, State.Locked)
@@ -176,19 +176,10 @@ contract Rent {
     {
         require(msg.value == contracts[contractId].price, "Price is incorrect.");
         
-        payable(contracts[contractId].owner).transfer(price);
+        payable(contracts[contractId].owner).transfer(msg.value);
         contracts[contractId].state = State.Succeeded;
         
         emit DepositReceived(contractId, contracts[contractId].owner, msg.sender);
-    }
-    
-    function setUpAutoTransfer(uint contractId) 
-        external
-        isTenant(contractId)
-        inState(contractId, State.Succeeded)
-        returns (bool)
-    {
-        return true;
     }
     
 }
