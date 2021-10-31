@@ -3,19 +3,7 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 import "./IRent.sol";
-/**
- * @title Rent
- * @dev manage rent lifecycle
- */
 contract Rent is IRent {
-    
-    // enum Frequency { BiWeekly, Monthly, Yearly }
-    // enum Currency { ETH, DAI }
-    
-    // struct Price {
-    //    uint price;
-    //    Currency currency;
-    // }
     
     Contract[] contracts;
     mapping(address => uint[]) contractMap; // user address -> contract IDs
@@ -82,7 +70,7 @@ contract Rent is IRent {
                 _contracts[i].location,
                 _contracts[i].price
             );
-        }   
+        } 
     }
     
     function getContractById(uint id) 
