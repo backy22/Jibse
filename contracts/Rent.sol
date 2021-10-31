@@ -11,7 +11,7 @@ contract Rent {
     enum State { 
         Active, // A contract has been created by the owner, waiting for a tenant.
         Locked, // The owner has chosen a tenant and is waiting to receive a deposit.
-        Accepted, // The tenent paid a deposit and the contract has successfully concluded.
+        Succeeded, // The tenent paid a deposit and the contract has successfully concluded.
         Inactive // A contract has been removed by the owner's request.
     }
     // enum Frequency { BiWeekly, Monthly, Yearly }
@@ -33,11 +33,14 @@ contract Rent {
     }
     
     Contract[] contracts;
-    mapping(address => uint[]) public contractMap; // user => contract_index
+    mapping(address => uint[]) contractMap; // user address -> contract IDs
+    mapping(uint => address[]) applicantMap; // contract Ids -> applicant addresses
     
-    // event for EVM logging
+    // events
     event ContractCreated(uint indexed id);
-    event ContractStateChanged(uint indexed id, State indexed oldState, State indexed newState);
+    event ContractLocked(uint indexed id, address indexed tenant);
+    event DepositReceived(uint indexed id, address indexed owner, address indexed tenant);
+    event ApplicationAccepted(uint indexed id, address indexed applicant);
     
     modifier isOwner(uint contractId) {
         require(msg.sender == contracts[contractId].owner, "Only owner can call this function.");
@@ -50,12 +53,7 @@ contract Rent {
     }
     
     modifier inState(uint contractId, State state) {
-        require(state != contracts[contractId].state, "Contract is not in valid state.");
-        _;
-    }
-    
-    modifier isValidPrice(uint contractId) {
-        require(msg.value != contracts[contractId].price, "Price is incorrect.");
+        require(state == contracts[contractId].state, "Contract is not in valid state.");
         _;
     }
     
@@ -67,7 +65,7 @@ contract Rent {
         uint endDate,
         string calldata location,
         uint price) 
-        external 
+        public 
     {
         require(startDate < endDate  ||
             endDate == 0, "End date should be null or later than start date.");
@@ -85,6 +83,21 @@ contract Rent {
         contractMap[msg.sender].push(id);
         
         emit ContractCreated(id);
+    }
+    
+    function addContracts(
+        Contract[] calldata _contracts) 
+        public
+    {
+        for(uint i=0; i<_contracts.length; i++)
+        {
+            this.addContract(
+                _contracts[i].startDate,
+                _contracts[i].endDate,
+                _contracts[i].location,
+                _contracts[i].price
+            );
+        }   
     }
 
     function getContracts(State state) 
@@ -125,19 +138,54 @@ contract Rent {
         return result;
     }
     
+    function accept(uint contractId, address _address) 
+        external
+        isOwner(contractId)
+    {
+        contracts[contractId].state = State.Locked;
+        contracts[contractId].tenant = _address;
+        
+        emit ContractLocked(contractId, _address);
+        
+        delete applicantMap[contractId];
+        contractMap[_address].push(contractId); // The tenant can see contract list in the tenant dashboard.
+    }
+    
+    function applyForContract(uint contractId)
+        external
+    {
+        require(msg.sender != contracts[contractId].owner, "Owner can't apply.");
+        applicantMap[contractId].push(msg.sender);
+        emit ApplicationAccepted(contractId, msg.sender);
+    }
+    
+    function getApplicants(uint contractId)
+        external
+        isOwner(contractId)
+        view
+        returns (address[] memory)
+    {
+        return applicantMap[contractId];
+    }
+    
+    function payDeposit(uint contractId, uint price)
+        external
+        isTenant(contractId)
+        inState(contractId, State.Locked)
+        payable
+    {
+        require(msg.value == contracts[contractId].price, "Price is incorrect.");
+        
+        payable(contracts[contractId].owner).transfer(price);
+        contracts[contractId].state = State.Succeeded;
+        
+        emit DepositReceived(contractId, contracts[contractId].owner, msg.sender);
+    }
+    
     function setUpAutoTransfer(uint contractId) 
         external
         isTenant(contractId)
-        inState(contractId, State.Accepted)
-        returns (bool)
-    {
-        return true;
-    }
-    
-    function pay(uint contractId)
-        external
-        isTenant(contractId)
-        inState(contractId, State.Accepted)
+        inState(contractId, State.Succeeded)
         returns (bool)
     {
         return true;
