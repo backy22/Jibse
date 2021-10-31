@@ -87,7 +87,7 @@ contract Rent {
     
     function addContracts(
         Contract[] calldata _contracts) 
-        public
+        external
     {
         for(uint i=0; i<_contracts.length; i++)
         {
@@ -99,8 +99,15 @@ contract Rent {
             );
         }   
     }
+    
+    function getContractById(uint id) 
+        external
+        view
+    {
+        return contracts[id];
+    }
 
-    function getContracts(State state) 
+    function getContractsByState(State state) 
         external 
         view 
         returns (Contract[] memory) 
@@ -124,7 +131,7 @@ contract Rent {
         return result;
     }
     
-    function getContracts(address _address) 
+    function getContractsByAddress(address _address) 
         external
         view 
         returns (Contract[] memory) 
@@ -138,7 +145,7 @@ contract Rent {
         return result;
     }
     
-    function accept(uint contractId, address _address) 
+    function acceptApplicant(uint contractId, address _address) 
         external
         isOwner(contractId)
     {
