@@ -8,7 +8,12 @@ import "hardhat/console.sol";
  * @dev manage score and review
  */
 
-contract Score {
+import "./IRent.sol";
+
+contract Score is IRent {
+
+    address private constant RentAddress = '0x5b1d95a74226225c24c29b94d7377ed0e9e6beb2d7f8acb9024c8545c5bbe891';
+
     mapping(address => uint) scoreMap; // user address => score
 
     struct Review {
@@ -20,6 +25,9 @@ contract Score {
 
     Review[] reviews;
     mapping(address => uint[]) reviewMap; // user address -> reviewIDs
+
+    constructor() {
+    }
 
     function getScore(address _address) 
         public
@@ -35,12 +43,11 @@ contract Score {
     {
         // get current score if exists
         uint score = getScore(_address) | 500;
-        console.log('score--', score);
         
         // get most current payment and check it's paid or over due or not paid // get from payment contract
         
         // get amount owed = price of the active contracts + get length of history = sum of the duration of all contract
-        Contract[] memory contracts = getContracts(_address);
+        Contract[] memory contracts = IRent(RentAddress).getContractsByAddress(_address);
         uint amount = 0;
         uint duration = 0;
         for(uint i=0; i < contracts.length; i++) {
@@ -58,8 +65,7 @@ contract Score {
         scoreMap[_address] = result;
     }
 
-    function addReview(uint _roomId, uint _star, string _review) public view{
-        uint id = contracts.length;
+    function addReview(uint _roomId, uint _star, string memory _review) external view {
         reviews.push(Review({
             roomId: _roomId,
             tenant: msg.sender,
