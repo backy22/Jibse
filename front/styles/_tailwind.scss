@@ -1,3 +1,115 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@layer base {
+  h1 {
+    @screen xs {
+      @apply text-3xl;
+      @apply leading-8;
+    }
+    @screen sm {
+      @apply text-3xl;
+      @apply leading-8;
+    }
+    @screen md {
+      @apply text-3xl;
+      @apply leading-9;
+    }
+    @screen lg {
+      @apply text-3xl;
+      @apply leading-10;
+    }
+    @screen xl {
+      @apply text-4xl;
+      @apply leading-10;
+    }
+    @screen xxl {
+      @apply text-5xl;
+      @apply leading-10;
+    }
+  }
+  h2 {
+    @screen xs {
+      @apply text-2xl;
+      @apply leading-8;
+    }
+    @screen sm {
+      @apply text-2xl;
+      @apply leading-8;
+    }
+    @screen md {
+      @apply text-2xl;
+    }
+    @screen lg {
+      @apply text-2xl;
+    }
+    @screen xl {
+      @apply text-3xl;
+    }
+    @screen xxl {
+      @apply text-4xl;
+    }
+  }
+  h3 {
+    @screen xs {
+      @apply text-lg
+    }
+    @screen sm {
+      @apply text-lg
+    }
+    @screen md {
+      @apply text-sm
+    }
+    @screen lg {
+      @apply text-base  
+    }
+    @screen xl {
+      @apply text-base
+    }
+    @screen xxl {
+      @apply text-2xl
+    }
+  }
+  h4 {
+    @screen xs {
+      @apply text-xs;
+    }
+    @screen sm {
+      @apply text-xs
+    }
+    @screen md {
+      @apply text-sm
+    }
+    @screen lg {
+      @apply text-base
+    }
+    @screen xl {
+      @apply text-base
+    }
+    @screen xxl {
+      @apply text-lg
+    }
+  }
+  h5 {
+    @screen xs {
+      @apply text-xs
+    }
+    @screen sm {
+      @apply text-xs
+    }
+    @screen md {
+      @apply text-xs
+    }
+    @screen lg {
+      @apply text-sm
+    }
+    @screen xl {
+      @apply text-sm
+    }
+    @screen xxl {
+      @apply text-base
+    }
+  }
+}
