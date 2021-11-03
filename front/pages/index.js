@@ -1,17 +1,20 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Nav from '../components/nav'
 import Link from 'next/link'
 import { ethers } from 'ethers';
+import rent from '../utils/Rent.json'
+
+const defaultContext = { account: null, rentContract: null }
+export const AuthContext = React.createContext(defaultContext)
 
 export default function Home() {
   const [currentAccount, setCurrentAccount] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [rentContract, setRentContract] = useState(null);
-  const [rents, setRents] = useState([]);
+  const [activeRents, setActiveRents] = useState([]);
 
-  const RENT_CONTRACT_ADDRESS = '';
+  const RENT_CONTRACT_ADDRESS = '0xf6395B9f0B5f6Ba3e58e69e316B9251e3AC601a8';
 
   const checkIfWalletIsConnected = async () => {
     try {
@@ -35,6 +38,7 @@ export default function Home() {
           const account = accounts[0];
           console.log('Found an authorized account:', account);
           setCurrentAccount(account);
+          defaultContext.account = account;
         } else {
           console.log('No authorized account found');
         }
@@ -79,19 +83,52 @@ export default function Home() {
       const signer = provider.getSigner();
       const rentContract = new ethers.Contract(
         RENT_CONTRACT_ADDRESS,
-        rentContract.abi,
+        rent.abi,
         signer
       );
 
+      console.log('rentContract', rentContract)
       setRentContract(rentContract);
+      defaultContext.rentContract = rentContract;
     } else {
       console.log('Ethereum object not found');
+    }
+  }
+
+  const getActiveRents = async() => {
+    try {
+      if (rentContract) {
+        const activeRents = await rentContract.getContractsByState(0)
+        let activeRentArray = []
+        for(let rent of activeRents) {
+          console.log('rent---', rent)
+          activeRentArray.push({
+            contractId: rent.contractId.toNumber(),
+            location: rent.location,
+            startDate: new Date(rent.startDate * 1000),
+            endDate: new Date(rent.endDate * 1000),
+            owner: rent.owner,
+            price: rent.price.toNumber()
+          })
+        }
+        setActiveRents(activeRentArray)
+      }
+    } catch (error) {
+      console.log('getActiveRent Error: ', error)
     }
   }
 
   useEffect(() => {
     checkIfWalletIsConnected();
   }, []);
+
+  useEffect(() => {
+    getRentContract();
+  }, [currentAccount])
+
+  useEffect(() => {
+    getActiveRents();
+  }, [rentContract]);
 
   return (
     <div>
@@ -108,7 +145,7 @@ export default function Home() {
           Rooms in Toronto
         </h1>
 
-        <div class="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div className="bg-white text-black p-4">
             <div>Graph</div>
             <div>Location</div>
