@@ -79,7 +79,7 @@ const OwnerDashboard = () => {
                             required
                             render={({ field }) => (
                             <DatePicker
-                                dateFormat="d MMM yyyy"
+                                dateFormat="yyyy-MM-dd"
                                 minDate={new Date()}
                                 showTimeSelect={false}
                                 placeholderText='Select start date'
@@ -94,7 +94,7 @@ const OwnerDashboard = () => {
                             name='endDate'
                             render={({ field }) => (
                             <DatePicker
-                                dateFormat="d MMM yyyy"
+                                dateFormat="yyyy-MM-dd"
                                 minDate={new Date()}
                                 showTimeSelect={false}
                                 placeholderText='Select end date'

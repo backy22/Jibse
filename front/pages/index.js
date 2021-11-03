@@ -4,6 +4,7 @@ import Nav from '../components/nav'
 import Link from 'next/link'
 import { ethers } from 'ethers';
 import rent from '../utils/Rent.json'
+import Moment from 'react-moment';
 
 const defaultContext = { account: null, rentContract: null }
 export const AuthContext = React.createContext(defaultContext)
@@ -98,10 +99,9 @@ export default function Home() {
   const getActiveRents = async() => {
     try {
       if (rentContract) {
-        const activeRents = await rentContract.getContractsByState(0)
+        const activeRentsTxn = await rentContract.getContractsByState(0)
         let activeRentArray = []
-        for(let rent of activeRents) {
-          console.log('rent---', rent)
+        for(let rent of activeRentsTxn) {
           activeRentArray.push({
             contractId: rent.contractId.toNumber(),
             location: rent.location,
@@ -111,6 +111,7 @@ export default function Home() {
             price: rent.price.toNumber()
           })
         }
+        console.log(activeRentArray)
         setActiveRents(activeRentArray)
       }
     } catch (error) {
@@ -146,30 +147,22 @@ export default function Home() {
         </h1>
 
         <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white text-black p-4">
-            <div>Graph</div>
-            <div>Location</div>
-            <div>Rent Date: 2021 Nov 1st - 2022 Oct 31th</div>
-            <div>Owner Address</div>
-            <div>1000DAI/month</div>
-            <Link href={`/room/1`}>
-              <a>Detail</a>
-            </Link>
-          </div>
-          <div className="bg-white text-black p-4">
-            <div>Graph</div>
-            <div>Location</div>
-            <div>Rent Date: 2021 Nov 1st - 2022 Oct 31th</div>
-            <div>Owner Address</div>
-            <div>1000DAI/month</div>
-          </div>
-          <div className="bg-white text-black p-4">
-            <div>Graph</div>
-            <div>Location</div>
-            <div>Rent Date: 2021 Nov 1st - 2022 Oct 31th</div>
-            <div>Owner Address</div>
-            <div>1000DAI/month</div>
-          </div>
+          {activeRents.length > 0 && activeRents.map((rent) => (
+            <div className="bg-white text-black p-4" key={rent.contractId}>
+              <div>Graph</div>
+              <div>{rent.location}</div>
+              <div>Rent Date:
+                <Moment format="YYYY-MM-DD">{rent.startDate.toString()}</Moment>
+                &nbsp;~&nbsp;
+                <Moment format="YYYY-MM-DD">{rent.endDate.toString()}</Moment>
+              </div>
+              <div>Owner Address: {rent.owner}</div>
+              <div>{rent.price} eth/month</div>
+              <Link href={`/room/${rent.contractId}`}>
+                <a>Detail</a>
+              </Link>
+            </div>
+          ))}
         </div>
       </main>
 
