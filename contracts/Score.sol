@@ -2,29 +2,29 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 import "hardhat/console.sol";
+import "./Rent.sol";
 
 /**
  * @title Score
  * @dev manage score and review
  */
 
-import "./IRent.sol";
+contract Score is Rent {
 
-contract Score is IRent {
-
-    address private constant RentAddress = '0x5b1d95a74226225c24c29b94d7377ed0e9e6beb2d7f8acb9024c8545c5bbe891';
+    address rent_address = 0xf6395B9f0B5f6Ba3e58e69e316B9251e3AC601a8;
 
     mapping(address => uint) scoreMap; // user address => score
 
     struct Review {
-        uint roomId;
+        uint reviewId;
+        uint contractId;
         address tenant;
         uint star;
         string review;
     }
 
     Review[] reviews;
-    mapping(address => uint[]) reviewMap; // user address -> reviewIDs
+    mapping(uint => uint[]) reviewMap; // contractId -> reviewIDs
 
     constructor() {
     }
@@ -39,7 +39,7 @@ contract Score is IRent {
 
     function calculateTenantScore(address _address)
         public
-        view
+        returns (uint)
     {
         // get current score if exists
         uint score = getScore(_address) | 500;
@@ -47,7 +47,8 @@ contract Score is IRent {
         // get most current payment and check it's paid or over due or not paid // get from payment contract
         
         // get amount owed = price of the active contracts + get length of history = sum of the duration of all contract
-        Contract[] memory contracts = IRent(RentAddress).getContractsByAddress(_address);
+        Rent rent = Rent(rent_address);
+        Contract[] memory contracts = rent.getContractsByAddress(_address);
         uint amount = 0;
         uint duration = 0;
         for(uint i=0; i < contracts.length; i++) {
@@ -63,14 +64,28 @@ contract Score is IRent {
         // calculate and save in the scoreMap
         uint result = score + amount * 10 + duration * 1/1000;
         scoreMap[_address] = result;
+        return result;
     }
 
-    function addReview(uint _roomId, uint _star, string memory _review) external view {
+    function addReview(uint _contractId, uint _star, string memory _review) public {
+        uint id = reviews.length;
         reviews.push(Review({
-            roomId: _roomId,
+            reviewId: id,
+            contractId: _contractId,
             tenant: msg.sender,
             star: _star,
             review: _review
         }));
+        reviewMap[_contractId].push(id);
+    }
+
+    function getReviews(uint _contractId) external view returns (Review[] memory){
+        uint[] memory reviewIds = reviewMap[_contractId];
+        Review[] memory result = new Review[](reviewIds.length);
+
+        for(uint i=0; i< reviewIds.length; i++) {
+            result[i] = reviews[reviewIds[i]];
+        }
+        return result;
     }
 }

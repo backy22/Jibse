@@ -1,5 +1,6 @@
 const main = async () => {
   const [owner] = await hre.ethers.getSigners();
+  // Rent
   const rentContractFactory = await hre.ethers.getContractFactory('Rent');
   const rentContract = await rentContractFactory.deploy();
   await rentContract.deployed();
