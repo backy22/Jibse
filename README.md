@@ -8,3 +8,8 @@ deploy testnet
 npx hardhat run scripts/deploy.js --network kovan
 ```
 
+run front
+```
+npm run dev
+```
+

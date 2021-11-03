@@ -1,0 +1,7 @@
+{
+  "extends": [
+    "next/babel",
+    "eslint:recommended",
+    "plugin:prettier/recommended"
+  ]
+}
