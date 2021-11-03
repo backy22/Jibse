@@ -12,6 +12,7 @@ interface IRent {
     }
     
     struct Contract {
+        uint contractId;
         uint startDate;
         uint endDate;
         address owner;

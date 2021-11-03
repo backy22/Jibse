@@ -1,0 +1,25 @@
+{
+    "presets": [
+      "next/babel"
+    ],
+    "plugins": [
+      [
+        "module-resolver",
+        {
+          "alias": {
+            "components": "./src/components",
+            "layouts": "./src/layouts",
+            "pages": "./src/pages",
+            "server": "./src/server"
+          }
+        }
+      ],
+      [
+        "@babel/plugin-proposal-decorators",
+        {
+          "legacy": true
+        }
+      ]
+    ]
+  }
+  
