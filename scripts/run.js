@@ -6,6 +6,12 @@ const main = async () => {
 
   console.log('Contract deployed to:', rentContract.address);
   console.log('Contract deployed by:', owner.address);
+
+  const addContract = await rentContract.addContract(1000,2000,'Toronto',1000)
+  addContract.wait();
+
+  const activeRents = await rentContract.getContractsByState(0);
+  console.log('activeRents', activeRents)
 };
 
 const runMain = async () => {
