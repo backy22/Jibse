@@ -45,6 +45,7 @@ contract Rent is IRent {
         
         uint id = contracts.length;
         contracts.push(Contract({
+            contractId: id,
             owner: msg.sender,
             tenant: address(0),
             startDate: startDate,
