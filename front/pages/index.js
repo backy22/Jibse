@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ethers } from 'ethers';
 import rent from '../utils/Rent.json'
 import Moment from 'react-moment';
+import Button from '../components/button'
 
 const defaultContext = { account: null, rentContract: null }
 export const AuthContext = React.createContext(defaultContext)
@@ -131,6 +132,17 @@ export default function Home() {
     getActiveRents();
   }, [rentContract]);
 
+  const applyRent = async(contractId) => {
+    console.log('contractId', contractId)
+    try {
+      const applyTxn = await rentContract.applyForContract(contractId);
+      await applyTxn.wait();
+      console.log('applyTxn: ', applyTxn);
+    } catch (error) {
+      console.log('Apply Rent Error: ', error)
+    }
+  }
+
   return (
     <div>
       <Head>
@@ -161,6 +173,9 @@ export default function Home() {
               <Link href={`/room/${rent.contractId}`}>
                 <a>Detail</a>
               </Link>
+              <div>
+                <Button onClick={() => applyRent(rent.contractId)} buttonText="Apply" />
+              </div>
             </div>
           ))}
         </div>

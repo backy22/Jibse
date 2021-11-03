@@ -1,9 +1,10 @@
 import Link from 'next/link'
+import Button from './button'
 
-const Nav = ({currentAccount, connectWalletAction}) => {
+const Nav = ({ currentAccount, connectWalletAction }) => {
   return (
     <nav className="flex justify-between p-6">
-      <div>Jibse</div>
+      <Link href={'/'}>Jibse</Link>
       {currentAccount ?
         <>
           <Link href={'/tenant'}>Tenant Dashboard</Link>
@@ -12,7 +13,7 @@ const Nav = ({currentAccount, connectWalletAction}) => {
         </>
       : (
         <div>
-          <button onClick={connectWalletAction} className="text-green-300 border-green-300 rounded-md border-2 p-2">Connect</button>
+          <Button onClick={connectWalletAction} buttonText="Connect" />
         </div>
       )}
     </nav>

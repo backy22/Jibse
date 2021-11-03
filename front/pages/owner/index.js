@@ -3,7 +3,9 @@ import { AuthContext } from ".."
 import Modal from 'react-modal'
 import { useForm, Controller } from "react-hook-form";
 import DatePicker from "react-datepicker";
+import Nav from '../../components/nav'
 import "react-datepicker/dist/react-datepicker.css";
+import Button from '../../components/button'
 
 const customStyles = {
     content: {
@@ -57,61 +59,65 @@ const OwnerDashboard = () => {
     }
 
     return (
-        <section>
-            <h1>Owner Dashboard</h1>
-            <button onClick={openModal}>Create Room</button>
+        <>
+            <Nav currentAccount={value.account} />
+            <section>
+                
+                <h1>Owner Dashboard</h1>
+                <Button onClick={openModal} buttonText="Create Room" />
 
-            <Modal 
-                isOpen={isOpen}
-                onRequestClose={closeModal}
-                onAfterOpen={afterOpenModal}
-                style={customStyles}
-                contentLabel="Create Room">
-                <form onSubmit={handleSubmit(onSubmit)} className="text-gray-500 flex flex-col">
-                    <div className="m-2">
-                        <input className="border-2" placeholder="Location" {...register("location", { required: true })} />
-                        {errors.exampleRequired && <span>This field is required</span>}
-                    </div>
-                    <div className="flex m-2">
-                        <Controller
-                            control={control}
-                            name='startDate'
-                            required
-                            render={({ field }) => (
-                            <DatePicker
-                                dateFormat="yyyy-MM-dd"
-                                minDate={new Date()}
-                                showTimeSelect={false}
-                                placeholderText='Select start date'
-                                onChange={(date) => field.onChange(date)}
-                                selected={field.value}
+                <Modal 
+                    isOpen={isOpen}
+                    onRequestClose={closeModal}
+                    onAfterOpen={afterOpenModal}
+                    style={customStyles}
+                    contentLabel="Create Room">
+                    <form onSubmit={handleSubmit(onSubmit)} className="text-gray-500 flex flex-col">
+                        <div className="m-2">
+                            <input className="border-2" placeholder="Location" {...register("location", { required: true })} />
+                            {errors.exampleRequired && <span>This field is required</span>}
+                        </div>
+                        <div className="flex m-2">
+                            <Controller
+                                control={control}
+                                name='startDate'
+                                required
+                                render={({ field }) => (
+                                <DatePicker
+                                    dateFormat="yyyy-MM-dd"
+                                    minDate={new Date()}
+                                    showTimeSelect={false}
+                                    placeholderText='Select start date'
+                                    onChange={(date) => field.onChange(date)}
+                                    selected={field.value}
+                                />
+                                )}
                             />
-                            )}
-                        />
-                        <div>~</div>
-                        <Controller
-                            control={control}
-                            name='endDate'
-                            render={({ field }) => (
-                            <DatePicker
-                                dateFormat="yyyy-MM-dd"
-                                minDate={new Date()}
-                                showTimeSelect={false}
-                                placeholderText='Select end date'
-                                onChange={(date) => field.onChange(date)}
-                                selected={field.value}
+                            <div>~</div>
+                            <Controller
+                                control={control}
+                                name='endDate'
+                                render={({ field }) => (
+                                <DatePicker
+                                    dateFormat="yyyy-MM-dd"
+                                    minDate={new Date()}
+                                    showTimeSelect={false}
+                                    placeholderText='Select end date'
+                                    onChange={(date) => field.onChange(date)}
+                                    selected={field.value}
+                                />
+                                )}
                             />
-                            )}
-                        />
-                    </div>
-                    <div className="m-2">
-                        <input className="border-2" placeholder="Price" {...register("price", { required: true })} />
-                        {errors.exampleRequired && <span>This field is required</span>}
-                    </div>
-                    <button className="text-green-300 border-green-300 rounded-md border-2 p-2" type="submit">Save</button>
-                </form>
-            </Modal>
-        </section>
+                        </div>
+                        <div className="m-2">
+                            <input className="border-2" placeholder="Price" {...register("price", { required: true })} />
+                            {errors.exampleRequired && <span>This field is required</span>}
+                        </div>
+                        <Button type="submit" buttonText="Save" />
+                    </form>
+                </Modal>
+            </section>
+        </>
     )
 }
 
