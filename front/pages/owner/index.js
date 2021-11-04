@@ -23,8 +23,6 @@ const customStyles = {
 
 const OwnerDashboard = () => {
     const value = useContext(AuthContext);
-    console.log('AuthContext----', value.account, value.rentContract)
-
     const [isOpen, setIsOpen] = useState(false)
 
     const { control, register, handleSubmit, watch, formState: { errors } } = useForm();

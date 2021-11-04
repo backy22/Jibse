@@ -4,6 +4,23 @@ import { useRouter } from 'next/router'
 import Nav from '../../components/nav'
 import Moment from 'react-moment';
 import Button from '../../components/button'
+import Modal from 'react-modal'
+import { useForm } from "react-hook-form";
+import StarRatings from 'react-star-ratings';
+
+const customStyles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+    },
+    overlay: {
+        background: 'rgba(24,24,24,0.7)'
+    }
+};
 
 const Room = () => {
     const router = useRouter()
@@ -12,7 +29,41 @@ const Room = () => {
     const value = useContext(AuthContext);
     const [rentDetail, setRentDetail] = useState('');
     const [applicants, setApplicants] = useState([]);
+    const [isOpen, setIsOpen] = useState(false)
+    const [rating, setRating] = useState(0)
 
+    const { register, handleSubmit, watch, formState: { errors } } = useForm();
+
+    const changeRating = (newRating) => {
+        setRating(newRating)
+    }
+
+    const onSubmit = async(values) => {
+        try {
+            const addReview = await value.scoreContract.addReview(
+                contractId,
+                rating,
+                values.review
+            )
+            addReview.wait();
+            console.log('addReview', addReview);
+        } catch (error) {
+            console.log('Add Contract Error: ', error);
+        } finally {
+            closeModal();
+        }
+    }
+
+    function afterOpenModal() {
+    }
+    
+    function closeModal() {
+        setIsOpen(false);
+    }
+
+    function openModal() {
+        setIsOpen(true)
+    }
 
     useEffect(() => {
         const getRentDetail = async() => {
@@ -29,7 +80,6 @@ const Room = () => {
                 const applicantTxn = await value.rentContract.getApplicants(contractId)
                 const applicantsArray = []
                 for(let applicant of applicantTxn) {
-                    console.log('applicant--', applicant)
                     applicantsArray.push(applicant)
                 }
                 console.log('applicantsArray', applicantsArray)
@@ -43,7 +93,6 @@ const Room = () => {
     }, [contractId, value.rentContract])
 
     const acceptApplicant = async(applicant) => {
-        console.log('applicant', applicant)
         try {
             const acceptTxn = await value.rentContract.acceptApplicant(contractId, applicant)
             await acceptTxn.wait();
@@ -70,6 +119,7 @@ const Room = () => {
                             </div>
                             <div>Owner Address: {rentDetail.owner}</div>
                             <div>{rentDetail.price} eth/month</div>
+                            <Button buttonText="Review this room" onClick={openModal} />
                         </div>
                         <h4>Applicants</h4>
                         <div className="flex flex-col bg-white text-black p-2">
@@ -83,6 +133,28 @@ const Room = () => {
                     </>
                 )}
 
+                <Modal 
+                    isOpen={isOpen}
+                    onRequestClose={closeModal}
+                    onAfterOpen={afterOpenModal}
+                    ariaHideApp={false}
+                    style={customStyles}
+                    contentLabel="Review Room">
+                    <form onSubmit={handleSubmit(onSubmit)} className="text-gray-500 flex flex-col">
+                        <StarRatings
+                            rating={rating}
+                            starRatedColor="blue"
+                            changeRating={changeRating}
+                            numberOfStars={5}
+                            name='rating'
+                        />
+                        <div className="m-2">
+                            <input className="border-2" placeholder="Write your review" {...register("review", { required: true })} />
+                            {errors.exampleRequired && <span>This field is required</span>}
+                        </div>
+                        <Button type="submit" buttonText="Save" />
+                    </form>
+                </Modal>
             </section>
         </>
     )

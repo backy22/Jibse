@@ -4,17 +4,19 @@ import Nav from '../components/nav'
 import Link from 'next/link'
 import { ethers } from 'ethers';
 import rent from '../utils/Rent.json'
+import score from '../utils/Score.json'
 import Moment from 'react-moment';
 import Button from '../components/button'
 import { RENT_CONTRACT_ADDRESS,  SCORE_CONTRACT_ADDRESS } from '../constants'
 
-const defaultContext = { account: null, rentContract: null }
+const defaultContext = { account: null, rentContract: null, scoreContract: null }
 export const AuthContext = React.createContext(defaultContext)
 
 export default function Home() {
   const [currentAccount, setCurrentAccount] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [rentContract, setRentContract] = useState(null);
+  const [scoreContract, setScoreContract] = useState(null);
   const [activeRents, setActiveRents] = useState([]);
   const [myRents, setMyRents] = useState([]);
 
@@ -89,9 +91,17 @@ export default function Home() {
         signer
       );
 
-      console.log('rentContract', rentContract)
       setRentContract(rentContract);
       defaultContext.rentContract = rentContract;
+
+      const scoreContract = new ethers.Contract(
+        SCORE_CONTRACT_ADDRESS,
+        score.abi,
+        signer
+      );
+
+      setScoreContract(scoreContract);
+      defaultContext.scoreContract = scoreContract;
     } else {
       console.log('Ethereum object not found');
     }
