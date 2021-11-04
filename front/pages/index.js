@@ -147,7 +147,7 @@ export default function Home() {
             state: rent.state
           })
         }
-        console.log(myRentArray)
+        console.log('myRentArray', myRentArray)
         setMyRents(myRentArray)
       }
     } catch (error) {
@@ -196,7 +196,7 @@ export default function Home() {
 
         <div className="grid grid-cols-3 gap-4">
           {myRents.length > 0 && myRents.map((rent) => (
-            <div className="bg-white text-black p-4" key={rent.contractId}>
+            <div className="bg-gray-purple p-4 rounded" key={rent.contractId}>
               <div>Graph</div>
               <div>{rent.location}</div>
               <div>Rent Date:
@@ -209,13 +209,10 @@ export default function Home() {
               <Link href={`/room/${rent.contractId}`}>
                 <a>Detail</a>
               </Link>
-              <div>
-                <Button onClick={() => applyRent(rent.contractId)} buttonText="Apply" />
-              </div>
             </div>
           ))}
           {activeRents.length > 0 && activeRents.map((rent) => (
-            <div className="bg-white text-black p-4" key={rent.contractId}>
+            <div className="bg-gray-purple p-4 rounded" key={rent.contractId}>
               <div>Graph</div>
               <div>{rent.location}</div>
               <div>Rent Date:
