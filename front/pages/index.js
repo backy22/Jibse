@@ -4,19 +4,21 @@ import Nav from '../components/nav'
 import Link from 'next/link'
 import { ethers } from 'ethers';
 import rent from '../utils/Rent.json'
+import score from '../utils/Score.json'
 import Moment from 'react-moment';
 import Button from '../components/button'
+import { RENT_CONTRACT_ADDRESS,  SCORE_CONTRACT_ADDRESS } from '../constants'
 
-const defaultContext = { account: null, rentContract: null }
+const defaultContext = { account: null, rentContract: null, scoreContract: null }
 export const AuthContext = React.createContext(defaultContext)
 
 export default function Home() {
   const [currentAccount, setCurrentAccount] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [rentContract, setRentContract] = useState(null);
+  const [scoreContract, setScoreContract] = useState(null);
   const [activeRents, setActiveRents] = useState([]);
-
-  const RENT_CONTRACT_ADDRESS = '0xf6395B9f0B5f6Ba3e58e69e316B9251e3AC601a8';
+  const [myRents, setMyRents] = useState([]);
 
   const checkIfWalletIsConnected = async () => {
     try {
@@ -89,9 +91,17 @@ export default function Home() {
         signer
       );
 
-      console.log('rentContract', rentContract)
       setRentContract(rentContract);
       defaultContext.rentContract = rentContract;
+
+      const scoreContract = new ethers.Contract(
+        SCORE_CONTRACT_ADDRESS,
+        score.abi,
+        signer
+      );
+
+      setScoreContract(scoreContract);
+      defaultContext.scoreContract = scoreContract;
     } else {
       console.log('Ethereum object not found');
     }
@@ -109,14 +119,39 @@ export default function Home() {
             startDate: new Date(rent.startDate * 1000),
             endDate: new Date(rent.endDate * 1000),
             owner: rent.owner,
-            price: rent.price.toNumber()
+            price: rent.price.toNumber(),
+            state: rent.state
           })
         }
-        console.log(activeRentArray)
         setActiveRents(activeRentArray)
       }
     } catch (error) {
       console.log('getActiveRent Error: ', error)
+    }
+  }
+
+  const getMyRents = async() => {
+    try {
+      if (rentContract) {
+        const myRentsTxn = await rentContract.getContractsByAddress(currentAccount)
+        let myRentArray = []
+        console.log('myRentsTxn', myRentsTxn);
+        for(let rent of myRentsTxn) {
+          myRentArray.push({
+            contractId: rent.contractId.toNumber(),
+            location: rent.location,
+            startDate: new Date(rent.startDate * 1000),
+            endDate: new Date(rent.endDate * 1000),
+            owner: rent.owner,
+            price: rent.price.toNumber(),
+            state: rent.state
+          })
+        }
+        console.log('myRentArray', myRentArray)
+        setMyRents(myRentArray)
+      }
+    } catch (error) {
+      console.log('getMyRent Error: ', error)
     }
   }
 
@@ -130,6 +165,7 @@ export default function Home() {
 
   useEffect(() => {
     getActiveRents();
+    getMyRents();
   }, [rentContract]);
 
   const applyRent = async(contractId) => {
@@ -159,8 +195,24 @@ export default function Home() {
         </h1>
 
         <div className="grid grid-cols-3 gap-4">
+          {myRents.length > 0 && myRents.map((rent) => (
+            <div className="bg-gray-purple p-4 rounded" key={rent.contractId}>
+              <div>Graph</div>
+              <div>{rent.location}</div>
+              <div>Rent Date:
+                <Moment format="YYYY-MM-DD">{rent.startDate.toString()}</Moment>
+                &nbsp;~&nbsp;
+                <Moment format="YYYY-MM-DD">{rent.endDate.toString()}</Moment>
+              </div>
+              <div>Owner Address: {rent.owner}</div>
+              <div>{rent.price} eth/month</div>
+              <Link href={`/room/${rent.contractId}`}>
+                <a>Detail</a>
+              </Link>
+            </div>
+          ))}
           {activeRents.length > 0 && activeRents.map((rent) => (
-            <div className="bg-white text-black p-4" key={rent.contractId}>
+            <div className="bg-gray-purple p-4 rounded" key={rent.contractId}>
               <div>Graph</div>
               <div>{rent.location}</div>
               <div>Rent Date:
