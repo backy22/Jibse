@@ -67,7 +67,7 @@ contract Score is Rent {
         return result;
     }
 
-    function addReview(uint _contractId, uint _star, string memory _review) public isTenant(_contractId) {
+    function addReview(uint _contractId, uint _star, string memory _review) public {
         uint id = reviews.length;
         reviews.push(Review({
             reviewId: id,

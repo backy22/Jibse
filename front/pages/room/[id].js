@@ -115,8 +115,8 @@ const Room = () => {
                 console.log('reviewsTxn', reviewsTxn)
                 for(let review of reviewsTxn) {
                     reviewsArray.push({
-                        reviewId: review.reviewId,
-                        star: review.star,
+                        reviewId: review.reviewId.toNumber(),
+                        star: review.star.toNumber(),
                         review: review.review
                     })
                 }
@@ -169,6 +169,19 @@ const Room = () => {
                                         <div className="flex justify-between">
                                             <div>{applicant}</div>
                                             <Button buttonText="Accept" onClick={() => acceptApplicant(applicant)}/>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                        {reviews.length > 0 && (
+                            <>
+                                <h4>Reviews</h4>
+                                <div className="flex flex-col bg-gray-purple p-2 rounded">
+                                    {reviews.map((review) => (
+                                        <div className="flex justify-around">
+                                            <div>{review.star}</div>
+                                            <div>{review.review}</div>
                                         </div>
                                     ))}
                                 </div>

@@ -32,8 +32,9 @@ const main = async () => {
   const calculateTenantScore = await scoreContract.calculateTenantScore(tenant.address);
   console.log('calculateTenantScore', calculateTenantScore);
 
-  const addReview = await scoreContract.addReview(0, 4, 'Quien and clean place. but not convenient');
+  const addReview = await scoreContract.connect(tenant).addReview(0, 4, 'Quiet and clean place. but not convenient');
   addReview.wait();
+  console.log('addReview', addReview);
 
   const reviews = await scoreContract.getReviews(0);
   console.log('reviews', reviews);
