@@ -4,23 +4,10 @@ import { useRouter } from 'next/router'
 import Nav from '../../components/nav'
 import Moment from 'react-moment';
 import Button from '../../components/button'
-import Modal from 'react-modal'
+import Modal from '../../components/modal'
 import { useForm } from "react-hook-form";
 import StarRatings from 'react-star-ratings';
-
-const customStyles = {
-    content: {
-      top: '50%',
-      left: '50%',
-      right: 'auto',
-      bottom: 'auto',
-      marginRight: '-50%',
-      transform: 'translate(-50%, -50%)',
-    },
-    overlay: {
-        background: 'rgba(24,24,24,0.7)'
-    }
-};
+import { shortenAddress } from '../../utils/shorten-address';
 
 const Room = () => {
     const router = useRouter()
@@ -34,6 +21,7 @@ const Room = () => {
     const [rating, setRating] = useState(0)
     const [isOwner, setIsOwner] = useState(false)
     const [isTenant, setIsTenant] = useState(false)
+    const [reviewing, setReviwing] = useState(false) 
 
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
 
@@ -44,6 +32,7 @@ const Room = () => {
     const onSubmit = async(values) => {
         console.log(contractId, rating, values.review)
         try {
+            setReviwing(true)
             const addReview = await value.scoreContract.addReview(
                 contractId,
                 rating,
@@ -55,15 +44,9 @@ const Room = () => {
         } catch (error) {
             console.log('Add Contract Error: ', error);
         } finally {
-            closeModal();
+            setIsOpen(false);
+            setReviwing(false)
         }
-    }
-
-    function afterOpenModal() {
-    }
-    
-    function closeModal() {
-        setIsOpen(false);
     }
 
     function openModal() {
@@ -144,9 +127,9 @@ const Room = () => {
 
     return (
         <>
-            <Nav currentAccount={value.account} />
+            <Nav currentAccount={value.account} className="max-w-6xl mx-auto" />
             <section className="max-w-6xl mx-auto">
-                <h1 className="text-center">Room Dashboard</h1>
+                <h1 className="text-center mb-12">Room Dashboard</h1>
                 {rentDetail && (
                     <>
                         <div className="bg-gray-purple p-4 mb-4 rounded">
@@ -157,7 +140,7 @@ const Room = () => {
                             &nbsp;~&nbsp;
                             <Moment format="YYYY-MM-DD">{rentDetail.endDate.toString()}</Moment>
                             </div>
-                            <div>Owner Address: {rentDetail.owner}</div>
+                            <div>Owner Address: {shortenAddress(rentDetail.owner)}</div>
                             <div>{rentDetail.price} eth/month</div>
                             {isTenant && <Button buttonText="Review this room" onClick={openModal} />}
                         </div>
@@ -166,7 +149,7 @@ const Room = () => {
                                 <h4>Applicants</h4>
                                 <div className="flex flex-col bg-gray-purple p-2 rounded">
                                     {applicants.map((applicant) => (
-                                        <div className="flex justify-between">
+                                        <div className="flex justify-between" key={applicant}>
                                             <div>{applicant}</div>
                                             <Button buttonText="Accept" onClick={() => acceptApplicant(applicant)}/>
                                         </div>
@@ -179,8 +162,16 @@ const Room = () => {
                                 <h4>Reviews</h4>
                                 <div className="flex flex-col bg-gray-purple p-2 rounded">
                                     {reviews.map((review) => (
-                                        <div className="flex justify-around">
-                                            <div>{review.star}</div>
+                                        <div key={review.reviewId}>
+                                            <div>
+                                                <StarRatings
+                                                    rating={review.star}
+                                                    starRatedColor="yellow"
+                                                    numberOfStars={5}
+                                                    name='rating'
+                                                    starDimension="25px"
+                                                />
+                                            </div>
                                             <div>{review.review}</div>
                                         </div>
                                     ))}
@@ -192,18 +183,16 @@ const Room = () => {
 
                 <Modal 
                     isOpen={isOpen}
-                    onRequestClose={closeModal}
-                    onAfterOpen={afterOpenModal}
-                    ariaHideApp={false}
-                    style={customStyles}
-                    contentLabel="Review Room">
+                    label="Review Room"
+                    setIsOpen={setIsOpen}>
                     <form onSubmit={handleSubmit(onSubmit)} className="text-gray-500 flex flex-col">
                         <StarRatings
                             rating={rating}
-                            starRatedColor="blue"
+                            starRatedColor="yellow"
                             changeRating={changeRating}
                             numberOfStars={5}
                             name='rating'
+                            starDimension="25px"
                         />
                         <div className="my-2">
                             <textarea className="border-2 w-full h-28 p-2" placeholder="Write your review" {...register("review", { required: true })} />
