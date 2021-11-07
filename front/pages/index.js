@@ -3,22 +3,24 @@ import React, { useState, useEffect } from 'react'
 import Nav from '../components/nav'
 import Link from 'next/link'
 import { ethers } from 'ethers';
-import rent from '../utils/Rent.json'
-import score from '../utils/Score.json'
+import rent from '../abi/Rent.json'
+import score from '../abi/Score.json'
 import Moment from 'react-moment';
 import Button from '../components/button'
-import { RENT_CONTRACT_ADDRESS,  SCORE_CONTRACT_ADDRESS } from '../constants'
+import { RENT_CONTRACT_ADDRESS,  SCORE_CONTRACT_ADDRESS } from '../utils/constants'
+import { shortenAddress } from '../utils/shorten-address';
 
 const defaultContext = { account: null, rentContract: null, scoreContract: null }
 export const AuthContext = React.createContext(defaultContext)
 
 export default function Home() {
   const [currentAccount, setCurrentAccount] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [connectingWallet, setConnectingWallet] = useState(false);
   const [rentContract, setRentContract] = useState(null);
   const [scoreContract, setScoreContract] = useState(null);
   const [activeRents, setActiveRents] = useState([]);
   const [myRents, setMyRents] = useState([]);
+  const [applyingRent, setApplyingRent] = useState(false);
 
   const checkIfWalletIsConnected = async () => {
     try {
@@ -60,7 +62,7 @@ export default function Home() {
         alert('Get MetaMask!');
         return;
       }
-      setIsLoading(true)
+      setConnectingWallet(true)
 
       /*
         * Fancy method to request access to account.
@@ -171,11 +173,14 @@ export default function Home() {
   const applyRent = async(contractId) => {
     console.log('contractId', contractId)
     try {
+      setApplyingRent(true)
       const applyTxn = await rentContract.applyForContract(contractId);
       await applyTxn.wait();
       console.log('applyTxn: ', applyTxn);
     } catch (error) {
       console.log('Apply Rent Error: ', error)
+    } finally {
+      setApplyingRent(false)
     }
   }
 
@@ -187,7 +192,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Nav currentAccount={currentAccount} connectWalletAction={connectWalletAction}/>
+      <Nav currentAccount={currentAccount} connectWalletAction={connectWalletAction} connectingWallet={connectingWallet} />
 
       <main className="max-w-6xl mx-auto">
         <h1 className="text-center mb-12">
@@ -196,15 +201,15 @@ export default function Home() {
 
         <div className="grid grid-cols-3 gap-4">
           {myRents.length > 0 && myRents.map((rent) => (
-            <div className="bg-gray-purple p-4 rounded" key={rent.contractId}>
+            <div className="bg-gray-purple p-4 rounded flex flex-col" key={rent.contractId}>
               <div>Graph</div>
               <div>{rent.location}</div>
-              <div>Rent Date:
+              <div>Rent Date:{' '}
                 <Moment format="YYYY-MM-DD">{rent.startDate.toString()}</Moment>
                 &nbsp;~&nbsp;
                 <Moment format="YYYY-MM-DD">{rent.endDate.toString()}</Moment>
               </div>
-              <div>Owner Address: {rent.owner}</div>
+              <div>Owner Address: {shortenAddress(rent.owner)}</div>
               <div>{rent.price} eth/month</div>
               <Link href={`/room/${rent.contractId}`}>
                 <a>Detail</a>
@@ -212,7 +217,7 @@ export default function Home() {
             </div>
           ))}
           {activeRents.length > 0 && activeRents.map((rent) => (
-            <div className="bg-gray-purple p-4 rounded" key={rent.contractId}>
+            <div className="bg-gray-purple p-4 rounded flex flex-col" key={rent.contractId}>
               <div>Graph</div>
               <div>{rent.location}</div>
               <div>Rent Date:
@@ -220,13 +225,13 @@ export default function Home() {
                 &nbsp;~&nbsp;
                 <Moment format="YYYY-MM-DD">{rent.endDate.toString()}</Moment>
               </div>
-              <div>Owner Address: {rent.owner}</div>
+              <div>Owner Address: {shortenAddress(rent.owner)}</div>
               <div>{rent.price} eth/month</div>
               <Link href={`/room/${rent.contractId}`}>
                 <a>Detail</a>
               </Link>
-              <div>
-                <Button onClick={() => applyRent(rent.contractId)} buttonText="Apply" />
+              <div className="self-center">
+                <Button onClick={() => applyRent(rent.contractId)} buttonText="Apply" isLoading={applyingRent} />
               </div>
             </div>
           ))}
@@ -234,7 +239,6 @@ export default function Home() {
       </main>
 
       <footer>
-        footer
       </footer>
     </div>
   )
