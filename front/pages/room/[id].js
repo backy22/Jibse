@@ -166,7 +166,7 @@ const Room = () => {
                                             <div>
                                                 <StarRatings
                                                     rating={review.star}
-                                                    starRatedColor="yellow"
+                                                    starRatedColor="rgba(239,220,5,1)"
                                                     numberOfStars={5}
                                                     name='rating'
                                                     starDimension="25px"
@@ -188,7 +188,8 @@ const Room = () => {
                     <form onSubmit={handleSubmit(onSubmit)} className="text-gray-500 flex flex-col">
                         <StarRatings
                             rating={rating}
-                            starRatedColor="yellow"
+                            starHoverColor="rgba(239,220,5,1)"
+                            starRatedColor="rgba(239,220,5,1)"
                             changeRating={changeRating}
                             numberOfStars={5}
                             name='rating'

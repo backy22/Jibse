@@ -51,46 +51,52 @@ const OwnerDashboard = () => {
                     label="Create Room">
                     <form onSubmit={handleSubmit(onSubmit)} className="text-gray-500 flex flex-col">
                         <div className="m-2">
-                            <input className="border-2" placeholder="Location" {...register("location", { required: true })} />
+                            <input className="border-2 p-2 w-full" placeholder="Location" {...register("location", { required: true })} />
                             {errors.exampleRequired && <span>This field is required</span>}
                         </div>
                         <div className="flex m-2">
-                            <Controller
-                                control={control}
-                                name='startDate'
-                                required
-                                render={({ field }) => (
-                                <DatePicker
-                                    dateFormat="yyyy-MM-dd"
-                                    minDate={new Date()}
-                                    showTimeSelect={false}
-                                    placeholderText='Select start date'
-                                    onChange={(date) => field.onChange(date)}
-                                    selected={field.value}
+                            <div className="border-2 p-2 mr-4">
+                                <Controller
+                                    control={control}
+                                    name='startDate'
+                                    required
+                                    render={({ field }) => (
+                                    <DatePicker
+                                        dateFormat="yyyy-MM-dd"
+                                        minDate={new Date()}
+                                        showTimeSelect={false}
+                                        placeholderText='Select start date'
+                                        onChange={(date) => field.onChange(date)}
+                                        selected={field.value}
+                                    />
+                                    )}
                                 />
-                                )}
-                            />
-                            <div>~</div>
-                            <Controller
-                                control={control}
-                                name='endDate'
-                                render={({ field }) => (
-                                <DatePicker
-                                    dateFormat="yyyy-MM-dd"
-                                    minDate={new Date()}
-                                    showTimeSelect={false}
-                                    placeholderText='Select end date'
-                                    onChange={(date) => field.onChange(date)}
-                                    selected={field.value}
+                            </div>
+                            <div className="p-2 mr-4">~</div>
+                            <div className="border-2 p-2">
+                                <Controller
+                                    control={control}
+                                    name='endDate'
+                                    render={({ field }) => (
+                                    <DatePicker
+                                        dateFormat="yyyy-MM-dd"
+                                        minDate={new Date()}
+                                        showTimeSelect={false}
+                                        placeholderText='Select end date'
+                                        onChange={(date) => field.onChange(date)}
+                                        selected={field.value}
+                                    />
+                                    )}
                                 />
-                                )}
-                            />
+                            </div>
                         </div>
                         <div className="m-2">
-                            <input className="border-2" placeholder="Price" {...register("price", { required: true })} />
+                            <input className="border-2 p-2 w-full" placeholder="Price" {...register("price", { required: true })} />
                             {errors.exampleRequired && <span>This field is required</span>}
                         </div>
-                        <Button type="submit" buttonText="Save" />
+                        <div className="mt-12 self-center">
+                            <Button type="submit" buttonText="Save" />
+                        </div>
                     </form>
                 </Modal>
             </section>
