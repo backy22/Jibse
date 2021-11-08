@@ -10,7 +10,7 @@ import Button from '../components/button'
 import { RENT_CONTRACT_ADDRESS,  SCORE_CONTRACT_ADDRESS } from '../utils/constants'
 import { shortenAddress } from '../utils/shorten-address';
 
-const defaultContext = { account: null, rentContract: null, scoreContract: null }
+const defaultContext = { account: null, rentContract: null, scoreContract: null, myRents: [] }
 export const AuthContext = React.createContext(defaultContext)
 
 export default function Home() {
@@ -151,6 +151,7 @@ export default function Home() {
         }
         console.log('myRentArray', myRentArray)
         setMyRents(myRentArray)
+        defaultContext.myRents = myRentArray;
       }
     } catch (error) {
       console.log('getMyRent Error: ', error)

@@ -9,6 +9,9 @@ const Nav = ({ currentAccount, connectWalletAction, connectingWallet }) => {
       {currentAccount ?
         <div className="flex">
           <div className="mr-6">
+            <Link href={'/admin'}>Admin</Link>
+          </div>
+          <div className="mr-6">
             <Link href={'/tenant'}>Tenant Dashboard</Link>
           </div>
           <div className="mr-6">
