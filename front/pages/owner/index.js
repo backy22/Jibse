@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { AuthContext } from ".."
 import { useForm, Controller } from "react-hook-form";
 import DatePicker from "react-datepicker";
@@ -11,6 +11,7 @@ const OwnerDashboard = () => {
     const value = useContext(AuthContext);
     const [isOpen, setIsOpen] = useState(false)
     const [creatingRoom, setCreatingRoom] = useState(false)
+    const [myRooms, setMyRooms] = useState([])
 
     const { control, register, handleSubmit, watch, formState: { errors } } = useForm();
 
@@ -37,6 +38,11 @@ const OwnerDashboard = () => {
         setIsOpen(true)
     }
 
+    useEffect(() => {
+        const filteredMyRent = value.myRents.filter((rent) => rent.owner.toLowerCase() == value.account)
+        setMyRooms(filteredMyRent);
+    }, [value.account, value.myRents])
+
     return (
         <>
             <Nav currentAccount={value.account} />
@@ -45,13 +51,19 @@ const OwnerDashboard = () => {
                 <h1 className="text-center mb-12">Owner Dashboard</h1>
                 <Button onClick={openModal} buttonText="Create Room" isLoading={creatingRoom}/>
 
+                {myRooms && myRooms.map((rent) => (
+                    <div key={rent.contractId}>
+                        <div>{rent.location}</div>
+                    </div>
+                ))}
+
                 <Modal 
                     isOpen={isOpen}
                     setIsOpen={setIsOpen}
                     label="Create Room">
-                    <form onSubmit={handleSubmit(onSubmit)} className="text-gray-500 flex flex-col">
+                    <form onSubmit={handleSubmit(onSubmit)} className="text-gray-100 flex flex-col">
                         <div className="m-2">
-                            <input className="border-2 p-2 w-full" placeholder="Location" {...register("location", { required: true })} />
+                            <input className="border-2 p-2 w-full bg-light-purple" placeholder="Location" {...register("location", { required: true })} />
                             {errors.exampleRequired && <span>This field is required</span>}
                         </div>
                         <div className="flex m-2">
@@ -91,7 +103,7 @@ const OwnerDashboard = () => {
                             </div>
                         </div>
                         <div className="m-2">
-                            <input className="border-2 p-2 w-full" placeholder="Price" {...register("price", { required: true })} />
+                            <input className="border-2 p-2 w-full bg-light-purple" placeholder="Price" {...register("price", { required: true })} />
                             {errors.exampleRequired && <span>This field is required</span>}
                         </div>
                         <div className="mt-12 self-center">

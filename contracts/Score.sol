@@ -3,14 +3,16 @@
 pragma solidity >=0.7.0 <0.9.0;
 import "hardhat/console.sol";
 import "./Rent.sol";
+import "./IRent.sol";
 
 /**
  * @title Score
  * @dev manage score and review
  */
 
-contract Score is Rent {
+contract Score {
 
+    Rent rent;
     address rent_address = 0xf6395B9f0B5f6Ba3e58e69e316B9251e3AC601a8; // everytime Rent contract is deployed, this should be updated.
 
     mapping(address => uint) scoreMap; // user address => score
@@ -27,6 +29,7 @@ contract Score is Rent {
     mapping(uint => uint[]) reviewMap; // contractId -> reviewIDs
 
     constructor() {
+        rent = Rent(rent_address);
     }
 
     function getScore(address _address) 
@@ -47,13 +50,12 @@ contract Score is Rent {
         // get most current payment and check it's paid or over due or not paid // get from payment contract
         
         // get amount owed = price of the active contracts + get length of history = sum of the duration of all contract
-        Rent rent = Rent(rent_address);
-        Contract[] memory contracts = rent.getContractsByAddress(_address);
+        IRent.Contract[] memory contracts = rent.getContractsByAddress(_address);
         uint amount = 0;
         uint duration = 0;
         for(uint i=0; i < contracts.length; i++) {
             duration += contracts[i].endDate - contracts[i].startDate;
-            if (contracts[i].state == State.Active) {
+            if (contracts[i].state == IRent.State.Active) {
                 amount += contracts[i].price;
             }
         }
@@ -94,8 +96,7 @@ contract Score is Rent {
         uint score = getScore(_address) | 500;
 
         // get all contracts
-        Rent rent = Rent(rent_address);
-        Contract[] memory contracts = rent.getContractsByAddress(_address);
+        IRent.Contract[] memory contracts = rent.getContractsByAddress(_address);
 
         // get reviews and calculate stars & duration & price
         uint count = 0;

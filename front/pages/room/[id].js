@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
+import Link from 'next/link'
 import { AuthContext } from ".."
 import { useRouter } from 'next/router'
 import Nav from '../../components/nav'
@@ -8,6 +9,7 @@ import Modal from '../../components/modal'
 import { useForm } from "react-hook-form";
 import StarRatings from 'react-star-ratings';
 import { shortenAddress } from '../../utils/shorten-address';
+import Graph from '../../components/graph';
 
 const Room = () => {
     const router = useRouter()
@@ -30,7 +32,6 @@ const Room = () => {
     }
 
     const onSubmit = async(values) => {
-        console.log(contractId, rating, values.review)
         try {
             setReviwing(true)
             const addReview = await value.scoreContract.addReview(
@@ -78,6 +79,9 @@ const Room = () => {
         }
 
         const getApplicants = async() => {
+            if (!isOwner) {
+                return
+            }
             try {
                 const applicantTxn = await value.rentContract.getApplicants(contractId)
                 const applicantsArray = []
@@ -132,17 +136,30 @@ const Room = () => {
                 <h1 className="text-center mb-12">Room Dashboard</h1>
                 {rentDetail && (
                     <>
-                        <div className="bg-gray-purple p-4 mb-4 rounded">
-                            <div>Graph</div>
-                            <div>{rentDetail.location}</div>
-                            <div>Rent Date:
-                            <Moment format="YYYY-MM-DD">{rentDetail.startDate.toString()}</Moment>
-                            &nbsp;~&nbsp;
-                            <Moment format="YYYY-MM-DD">{rentDetail.endDate.toString()}</Moment>
+                        <div className="flex">
+                            <div className="bg-gray-purple p-4 mb-4 rounded mr-6">
+                                <Graph />
                             </div>
-                            <div>Owner Address: {shortenAddress(rentDetail.owner)}</div>
-                            <div>{rentDetail.price} eth/month</div>
-                            {isTenant && <Button buttonText="Review this room" onClick={openModal} />}
+                            <div>
+                                <div>{rentDetail.location}</div>
+                                <div>Rent Date:
+                                <Moment format="YYYY-MM-DD">{rentDetail.startDate.toString()}</Moment>
+                                &nbsp;~&nbsp;
+                                <Moment format="YYYY-MM-DD">{rentDetail.endDate.toString()}</Moment>
+                                </div>
+                                <Link href={`/user/${rentDetail.owner}`}>
+                                    <a>Owner Address: {shortenAddress(rentDetail.owner)}</a>
+                                </Link>
+                                <Link href={`/user/${rentDetail.tenant}`}>
+                                    <a>Tenant Address: {shortenAddress(rentDetail.tenant)}</a>
+                                </Link>
+                                <div>{rentDetail.price} eth/month</div>
+                                {isTenant && (
+                                    <div className="mt-6">
+                                        <Button buttonText="Review this room" onClick={openModal} />
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         {isOwner && applicants.length > 0 && (
                             <>
@@ -185,7 +202,7 @@ const Room = () => {
                     isOpen={isOpen}
                     label="Review Room"
                     setIsOpen={setIsOpen}>
-                    <form onSubmit={handleSubmit(onSubmit)} className="text-gray-500 flex flex-col">
+                    <form onSubmit={handleSubmit(onSubmit)} className="text-gray-100 flex flex-col">
                         <StarRatings
                             rating={rating}
                             starHoverColor="rgba(239,220,5,1)"
@@ -195,11 +212,13 @@ const Room = () => {
                             name='rating'
                             starDimension="25px"
                         />
-                        <div className="my-2">
-                            <textarea className="border-2 w-full h-28 p-2" placeholder="Write your review" {...register("review", { required: true })} />
+                        <div className="my-4">
+                            <textarea className="border-2 w-full h-28 p-2 bg-light-purple" placeholder="Write your review" {...register("review", { required: true })} />
                             {errors.exampleRequired && <span>This field is required</span>}
                         </div>
-                        <Button type="submit" buttonText="Save" />
+                        <div className="mx-auto">
+                            <Button type="submit" buttonText="Save" isLoading={reviewing} />
+                        </div>
                     </form>
                 </Modal>
             </section>
