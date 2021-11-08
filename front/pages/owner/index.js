@@ -61,9 +61,9 @@ const OwnerDashboard = () => {
                     isOpen={isOpen}
                     setIsOpen={setIsOpen}
                     label="Create Room">
-                    <form onSubmit={handleSubmit(onSubmit)} className="text-gray-500 flex flex-col">
+                    <form onSubmit={handleSubmit(onSubmit)} className="text-gray-100 flex flex-col">
                         <div className="m-2">
-                            <input className="border-2 p-2 w-full" placeholder="Location" {...register("location", { required: true })} />
+                            <input className="border-2 p-2 w-full bg-light-purple" placeholder="Location" {...register("location", { required: true })} />
                             {errors.exampleRequired && <span>This field is required</span>}
                         </div>
                         <div className="flex m-2">
@@ -103,7 +103,7 @@ const OwnerDashboard = () => {
                             </div>
                         </div>
                         <div className="m-2">
-                            <input className="border-2 p-2 w-full" placeholder="Price" {...register("price", { required: true })} />
+                            <input className="border-2 p-2 w-full bg-light-purple" placeholder="Price" {...register("price", { required: true })} />
                             {errors.exampleRequired && <span>This field is required</span>}
                         </div>
                         <div className="mt-12 self-center">

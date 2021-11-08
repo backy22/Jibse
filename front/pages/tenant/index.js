@@ -10,7 +10,6 @@ const TenantDashboard = () => {
         const getMyScore = async() => {
             try {
                 const scoreTxn = await value.scoreContract.getScore(value.account, { gasLimit: 1000000 })
-                console.log('scoreTxn', scoreTxn.toNumber())
                 setScore(scoreTxn.toNumber())
             } catch (error) {
                 console.log('Get score Error: ', error)

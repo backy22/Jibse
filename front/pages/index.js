@@ -9,6 +9,7 @@ import Moment from 'react-moment';
 import Button from '../components/button'
 import { RENT_CONTRACT_ADDRESS,  SCORE_CONTRACT_ADDRESS } from '../utils/constants'
 import { shortenAddress } from '../utils/shorten-address';
+import Graph from '../components/graph'
 
 const defaultContext = { account: null, rentContract: null, scoreContract: null, myRents: [] }
 export const AuthContext = React.createContext(defaultContext)
@@ -64,16 +65,10 @@ export default function Home() {
       }
       setConnectingWallet(true)
 
-      /*
-        * Fancy method to request access to account.
-        */
       const accounts = await ethereum.request({
         method: 'eth_requestAccounts',
       });
 
-      /*
-        * Boom! This should print out public address once we authorize Metamask.
-        */
       console.log('Connected', accounts[0]);
       setCurrentAccount(accounts[0]);
     } catch (error) {
@@ -81,7 +76,7 @@ export default function Home() {
     }
   };
 
-  const getRentContract = () => {
+  const getContracts = () => {
     const { ethereum } = window;
       
     if (ethereum) {
@@ -163,7 +158,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    getRentContract();
+    getContracts();
   }, [currentAccount])
 
   useEffect(() => {
@@ -203,14 +198,16 @@ export default function Home() {
         <div className="grid grid-cols-3 gap-4">
           {myRents.length > 0 && myRents.map((rent) => (
             <div className="bg-gray-purple p-4 rounded flex flex-col" key={rent.contractId}>
-              <div>Graph</div>
+              <Graph />
               <div>{rent.location}</div>
               <div>Rent Date:{' '}
                 <Moment format="YYYY-MM-DD">{rent.startDate.toString()}</Moment>
                 &nbsp;~&nbsp;
                 <Moment format="YYYY-MM-DD">{rent.endDate.toString()}</Moment>
               </div>
-              <div>Owner Address: {shortenAddress(rent.owner)}</div>
+              <Link href={`/user/${rent.owner}`}>
+                <a>Owner Address: {shortenAddress(rent.owner)}</a>
+              </Link>
               <div>{rent.price} eth/month</div>
               <Link href={`/room/${rent.contractId}`}>
                 <a>Detail</a>
@@ -219,14 +216,16 @@ export default function Home() {
           ))}
           {activeRents.length > 0 && activeRents.map((rent) => (
             <div className="bg-gray-purple p-4 rounded flex flex-col" key={rent.contractId}>
-              <div>Graph</div>
+              <Graph />
               <div>{rent.location}</div>
               <div>Rent Date:
                 <Moment format="YYYY-MM-DD">{rent.startDate.toString()}</Moment>
                 &nbsp;~&nbsp;
                 <Moment format="YYYY-MM-DD">{rent.endDate.toString()}</Moment>
               </div>
-              <div>Owner Address: {shortenAddress(rent.owner)}</div>
+              <Link href={`/user/${rent.owner}`}>
+                <a>Owner Address: {shortenAddress(rent.owner)}</a>
+              </Link>
               <div>{rent.price} eth/month</div>
               <Link href={`/room/${rent.contractId}`}>
                 <a>Detail</a>

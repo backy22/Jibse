@@ -3,7 +3,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'gray-purple': '#493b61'
+        'base-purple': '#200A3E',
+        'gray-purple': '#493b61',
+        'light-purple': '#3c2163'
       },
       screens: {
         'xs': '320px',

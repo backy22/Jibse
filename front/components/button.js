@@ -1,10 +1,11 @@
 import Spinner from './spinner';
 
-const Button = ({onClick, buttonText, type, isLoading}) => {
+const Button = ({onClick, buttonText, type, isLoading, disabled}) => {
     return (
         <button
             onClick={onClick}
             type={type}
+            disabled={disabled}
             className="w-40 text-green-300 border-green-300 rounded-md border-2 p-2 relative hover:bg-green-500 hover:text-white"
         >
             {buttonText}
