@@ -5,8 +5,6 @@ pragma solidity >=0.7.0 <0.9.0;
 import "./IRent.sol";
 import "./Rent.sol";
 
-import "https://github.com/bokkypoobah/BokkyPooBahsDateTimeLibrary/blob/master/contracts/BokkyPooBahsDateTimeLibrary.sol";
-
 contract Payment {
     
     enum State { 
@@ -29,7 +27,8 @@ contract Payment {
     address internal rentContract = 0x6FddFDbEf1bb65a137E3D17B987EBB35dA9AAb98;
     
     Bill[] bills;
-    mapping(address => uint[]) billMap; // user address => bill IDs
+    mapping(address => uint[]) userAddressBillMap; // user address => bill IDs
+    mapping(uint => uint[]) contractBillMap; // contract ID => bill IDs
     
     constructor() {
         rent = Rent(rentContract);
@@ -37,13 +36,11 @@ contract Payment {
     
     function createBill(uint contractId) external {
         IRent.Contract memory _contract = rent.getContractById(contractId);
-        uint currentTimestamp = block.timestamp * 1000;
-        require(currentTimestamp < _contract.endDate, "The contract has already ended.");
+
+        require(block.timestamp < _contract.endDate, "The contract has already ended.");
         require(_contract.state == IRent.State.Succeeded, "The contract is in an invalid state.");
         
-        (uint currentYear, uint currentMonth, uint currentDay) = BokkyPooBahsDateTimeLibrary.timestampToDate(currentTimestamp);
-        (uint contractYear, uint contractMonth, uint contractDay) = BokkyPooBahsDateTimeLibrary.timestampToDate(_contract.startDate);
-        uint billingDate = BokkyPooBahsDateTimeLibrary.timestampFromDate(currentYear, currentMonth, contractDay);
+        uint billingDate = _contract.startDate + (1 + contractBillMap[contractId].length) * 30 days;
         
         uint id = bills.length;
         bills.push(Bill({
@@ -55,7 +52,9 @@ contract Payment {
             payee: _contract.owner,
             payer: address(0)
         }));
-        billMap[_contract.tenant].push(id);
+
+        contractBillMap[contractId].push(id);
+        userAddressBillMap[_contract.tenant].push(id);
     }
     
     function getBillsByAddress(address _address)
@@ -63,11 +62,26 @@ contract Payment {
         view
         returns (Bill[] memory)
     {
-        uint[] memory addresses = billMap[_address];
+        uint[] memory addresses = userAddressBillMap[_address];
         Bill[] memory result = new Bill[](addresses.length);
         
         for(uint i=0; i<addresses.length; i++) {
             result[i] = bills[addresses[i]];
+        }
+        
+        return result;
+    }
+
+    function getBillsByContractId(uint contractId)
+        external
+        view
+        returns (Bill[] memory)
+    {
+        uint[] memory _bills = contractBillMap[contractId];
+        Bill[] memory result = new Bill[](_bills.length);
+        
+        for(uint i=0; i<_bills.length; i++) {
+            result[i] = bills[_bills[i]];
         }
         
         return result;
