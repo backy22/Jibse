@@ -124,8 +124,19 @@ const Room = () => {
             const acceptTxn = await value.rentContract.acceptApplicant(contractId, applicant)
             await acceptTxn.wait();
             console.log('accpetTxn: ', acceptTxn);
+            createBill();
         } catch (error) {
             console.log('Accept applicant Error: ', error)
+        }
+    }
+
+    const createBill = async() => {
+        try {
+            const createBillTxn = await value.paymentContract.createBill(contractId, { gasLimit: 1000000 })
+            await createBillTxn.wait();
+            console.log('createBillTxt: ', createBillTxn);
+        } catch (error) {
+            console.log('Create bill Error: ', error)
         }
     }
 

@@ -24,7 +24,7 @@ contract Payment {
     }
     
     IRent internal rent;
-    address internal rentContract = 0x6FddFDbEf1bb65a137E3D17B987EBB35dA9AAb98;
+    address internal rentContract = 0x6F89Cc3D89f29D327740d08C024267c8559F04a4;
     
     Bill[] bills;
     mapping(address => uint[]) userAddressBillMap; // user address => bill IDs

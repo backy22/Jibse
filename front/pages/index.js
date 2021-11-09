@@ -5,13 +5,14 @@ import Link from 'next/link'
 import { ethers } from 'ethers';
 import rent from '../abi/Rent.json'
 import score from '../abi/Score.json'
+import payment from '../abi/Payment.json'
 import Moment from 'react-moment';
 import Button from '../components/button'
-import { RENT_CONTRACT_ADDRESS,  SCORE_CONTRACT_ADDRESS } from '../utils/constants'
+import { RENT_CONTRACT_ADDRESS,  SCORE_CONTRACT_ADDRESS, PAYMENT_CONTRACT_ADDRESS } from '../utils/constants'
 import { shortenAddress } from '../utils/shorten-address';
 import Graph from '../components/graph'
 
-const defaultContext = { account: null, rentContract: null, scoreContract: null, myRents: [], appliedRents: [] }
+const defaultContext = { account: null, rentContract: null, scoreContract: null, paymentContract: null, myRents: [], appliedRents: [] }
 export const AuthContext = React.createContext(defaultContext)
 
 export default function Home() {
@@ -19,6 +20,7 @@ export default function Home() {
   const [connectingWallet, setConnectingWallet] = useState(false);
   const [rentContract, setRentContract] = useState(null);
   const [scoreContract, setScoreContract] = useState(null);
+  const [paymentContract, setPaymentContract] = useState(null);
   const [activeRents, setActiveRents] = useState([]);
   const [myRents, setMyRents] = useState([]);
   const [appliedRents, setAppliedRents] = useState([])
@@ -83,6 +85,7 @@ export default function Home() {
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
+
       const rentContract = new ethers.Contract(
         RENT_CONTRACT_ADDRESS,
         rent.abi,
@@ -100,6 +103,15 @@ export default function Home() {
 
       setScoreContract(scoreContract);
       defaultContext.scoreContract = scoreContract;
+
+      const paymentContract = new ethers.Contract(
+        PAYMENT_CONTRACT_ADDRESS,
+        payment.abi,
+        signer
+      );
+
+      setPaymentContract(paymentContract);
+      defaultContext.paymentContract = paymentContract;
     } else {
       console.log('Ethereum object not found');
     }
@@ -135,7 +147,9 @@ export default function Home() {
     try {
         const appliedRentTxn = await rentContract.getAppliedContracts(currentAccount, { gasLimit: 1000000 })
         const appliedRentArray = []
+        const myRentIds = myRents.map((rent) => rent.contractId)
         for(let appliedRent of appliedRentTxn) {
+          if(!myRentIds.includes(appliedRent.contractId.toNumber())) {
             appliedRentArray.push({
                 contractId: appliedRent.contractId.toNumber(),
                 location: appliedRent.location,
@@ -145,6 +159,7 @@ export default function Home() {
                 tenant: appliedRent.tenant,
                 price: appliedRent.price.toNumber()
             })
+          }
         }
         console.log('appliedRentArray', appliedRentArray)
         setAppliedRents(appliedRentArray)
@@ -188,14 +203,19 @@ export default function Home() {
   }, [currentAccount])
 
   useEffect(() => {
-    if (rentContract) {
-      getAppliedRents();
+    if (currentAccount && rentContract) {
       getMyRents();
     }
   }, [rentContract]);
 
   useEffect(() => {
-    if (rentContract) {
+    if (currentAccount && rentContract) {
+      getAppliedRents();
+    }
+  }, [myRents, rentContract]);
+
+  useEffect(() => {
+    if (currentAccount && rentContract) {
       getActiveRents();
     }
   }, [rentContract, appliedRents])
