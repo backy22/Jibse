@@ -11,7 +11,7 @@ import { RENT_CONTRACT_ADDRESS,  SCORE_CONTRACT_ADDRESS } from '../utils/constan
 import { shortenAddress } from '../utils/shorten-address';
 import Graph from '../components/graph'
 
-const defaultContext = { account: null, rentContract: null, scoreContract: null, myRents: [] }
+const defaultContext = { account: null, rentContract: null, scoreContract: null, myRents: [], appliedRents: [] }
 export const AuthContext = React.createContext(defaultContext)
 
 export default function Home() {
@@ -21,6 +21,7 @@ export default function Home() {
   const [scoreContract, setScoreContract] = useState(null);
   const [activeRents, setActiveRents] = useState([]);
   const [myRents, setMyRents] = useState([]);
+  const [appliedRents, setAppliedRents] = useState([])
   const [applyingRent, setApplyingRent] = useState(false);
 
   const checkIfWalletIsConnected = async () => {
@@ -104,31 +105,6 @@ export default function Home() {
     }
   }
 
-  const getActiveRents = async() => {
-    try {
-      if (rentContract) {
-        const activeRentsTxn = await rentContract.getContractsByState(0)
-        let activeRentArray = []
-        for(let rent of activeRentsTxn) {
-          if (rent.owner.toLowerCase() !== currentAccount) {
-            activeRentArray.push({
-              contractId: rent.contractId.toNumber(),
-              location: rent.location,
-              startDate: new Date(rent.startDate * 1000),
-              endDate: new Date(rent.endDate * 1000),
-              owner: rent.owner,
-              price: rent.price.toNumber(),
-              state: rent.state
-            })
-          }
-        }
-        setActiveRents(activeRentArray)
-      }
-    } catch (error) {
-      console.log('getActiveRent Error: ', error)
-    }
-  }
-
   const getMyRents = async() => {
     try {
       if (rentContract) {
@@ -141,6 +117,7 @@ export default function Home() {
             startDate: new Date(rent.startDate * 1000),
             endDate: new Date(rent.endDate * 1000),
             owner: rent.owner,
+            tenant: rent.tenant,
             price: rent.price.toNumber(),
             state: rent.state
           })
@@ -154,6 +131,54 @@ export default function Home() {
     }
   }
 
+  const getAppliedRents = async() => {
+    try {
+        const appliedRentTxn = await rentContract.getAppliedContracts(currentAccount, { gasLimit: 1000000 })
+        const appliedRentArray = []
+        for(let appliedRent of appliedRentTxn) {
+            appliedRentArray.push({
+                contractId: appliedRent.contractId.toNumber(),
+                location: appliedRent.location,
+                startDate: new Date(appliedRent.startDate * 1000),
+                endDate: new Date(appliedRent.endDate * 1000),
+                owner: appliedRent.owner,
+                tenant: appliedRent.tenant,
+                price: appliedRent.price.toNumber()
+            })
+        }
+        console.log('appliedRentArray', appliedRentArray)
+        setAppliedRents(appliedRentArray)
+        defaultContext.appliedRents = appliedRentArray;
+    } catch (error) {
+        console.log('Get applied rents Error: ', error)
+    }
+  }
+
+  const getActiveRents = async() => {
+    try {
+      const activeRentsTxn = await rentContract.getContractsByState(0)
+      let activeRentArray = []
+      let appliedRentContractIds = appliedRents.map((rent) => rent.contractId);
+      console.log('appliedRentContractIds', appliedRentContractIds)
+      for(let rent of activeRentsTxn) {
+        if (!appliedRentContractIds.includes(rent.contractId.toNumber()) && rent.owner.toLowerCase() !== currentAccount && rent.tenant.toLowerCase() !== currentAccount) {
+          activeRentArray.push({
+            contractId: rent.contractId.toNumber(),
+            location: rent.location,
+            startDate: new Date(rent.startDate * 1000),
+            endDate: new Date(rent.endDate * 1000),
+            owner: rent.owner,
+            price: rent.price.toNumber(),
+            state: rent.state
+          })
+        }
+      }
+      setActiveRents(activeRentArray)
+    } catch (error) {
+      console.log('getActiveRent Error: ', error)
+    }
+  }
+
   useEffect(() => {
     checkIfWalletIsConnected();
   }, []);
@@ -163,9 +188,17 @@ export default function Home() {
   }, [currentAccount])
 
   useEffect(() => {
-    getActiveRents();
-    getMyRents();
+    if (rentContract) {
+      getAppliedRents();
+      getMyRents();
+    }
   }, [rentContract]);
+
+  useEffect(() => {
+    if (rentContract) {
+      getActiveRents();
+    }
+  }, [rentContract, appliedRents])
 
   const applyRent = async(contractId) => {
     console.log('contractId', contractId)
@@ -197,6 +230,27 @@ export default function Home() {
         </h1>
 
         <div className="grid grid-cols-3 gap-4">
+          {appliedRents.length > 0 && appliedRents.map((rent) => (
+            <div className="bg-gray-purple p-4 rounded flex flex-col" key={rent.contractId}>
+              <Graph />
+              <div>{rent.location}</div>
+              <div>Rent Date:{' '}
+                <Moment format="YYYY-MM-DD">{rent.startDate.toString()}</Moment>
+                &nbsp;~&nbsp;
+                <Moment format="YYYY-MM-DD">{rent.endDate.toString()}</Moment>
+              </div>
+              <Link href={`/user/${rent.owner}`}>
+                <a>Owner Address: {shortenAddress(rent.owner)}</a>
+              </Link>
+              <div>{rent.price} eth/month</div>
+              <Link href={`/room/${rent.contractId}`}>
+                <a>Room Detail</a>
+              </Link>
+              <div className="self-center mt-8">
+                <Button buttonText="Applied" disabled={true} />
+              </div>
+            </div>
+          ))}
           {myRents.length > 0 && myRents.map((rent) => (
             <div className="bg-gray-purple p-4 rounded flex flex-col" key={rent.contractId}>
               <Graph />
@@ -213,6 +267,16 @@ export default function Home() {
               <Link href={`/room/${rent.contractId}`}>
                 <a>Room Detail</a>
               </Link>
+              {rent.owner.toLowerCase() === currentAccount && (
+                <div className="self-center mt-8">
+                  <Button buttonText="You are Owner" disabled={true} />
+                </div>
+              )}
+              {rent.tenant.toLowerCase() === currentAccount && (
+                <div className="self-center mt-8">
+                  <Button buttonText="You are Tenant" disabled={true} />
+                </div>
+              )}
             </div>
           ))}
           {activeRents.length > 0 && activeRents.map((rent) => (

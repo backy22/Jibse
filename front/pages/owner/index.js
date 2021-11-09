@@ -3,11 +3,10 @@ import { AuthContext } from ".."
 import { useForm, Controller } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import Nav from '../../components/nav'
-import Link from 'next/link'
 import "react-datepicker/dist/react-datepicker.css";
 import Button from '../../components/button'
 import Modal from '../../components/modal'
-import Graph from '../../components/graph'
+import RoomComponent from '../../components/room-component';
 
 const OwnerDashboard = () => {
     const value = useContext(AuthContext);
@@ -55,18 +54,8 @@ const OwnerDashboard = () => {
                     <Button onClick={openModal} buttonText="Create Room" isLoading={creatingRoom}/>
                 </div>
 
-                {myRooms && myRooms.map((rent) => (
-                    <div className="flex" key={rent.contractId}>
-                        <div className="bg-gray-purple p-4 mb-4 rounded mr-6">
-                            <Graph />
-                        </div>
-                        <div>
-                            <div>{rent.location}</div>
-                            <Link href={`/room/${rent.contractId}`}>
-                                <a>Room Detail</a>
-                            </Link>
-                        </div>
-                    </div>
+                {myRooms.length > 0 && myRooms.map((rent) => (
+                    <RoomComponent rent={rent} />
                 ))}
 
                 <Modal 

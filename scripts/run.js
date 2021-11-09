@@ -12,42 +12,45 @@ const main = async () => {
   const addContract = await rentContract.addContract(1000,2000,'Toronto',1000)
   addContract.wait();
 
-  const activeRents = await rentContract.getContractsByState(0);
-  console.log('activeRents', activeRents);
+  // const activeRents = await rentContract.getContractsByState(0);
+  // console.log('activeRents', activeRents);
 
   const applyContract = await rentContract.connect(tenant).applyForContract(0);
   const applicants = await rentContract.getApplicants(0);
   console.log('Applicants', applicants);
 
-  const acceptContract = await rentContract.acceptApplicant(0, tenant.address);
-  console.log('Accept', tenant.address);
+  const appliedContracts = await rentContract.getAppliedContracts(tenant.address);
+  console.log('Applied contracts', appliedContracts);
+
+  // const acceptContract = await rentContract.acceptApplicant(0, tenant.address);
+  // console.log('Accept', tenant.address);
 
   // Score Contract
-  const scoreContractFactory = await hre.ethers.getContractFactory('Score');
-  const scoreContract = await scoreContractFactory.deploy();
-  await scoreContract.deployed();
+  // const scoreContractFactory = await hre.ethers.getContractFactory('Score');
+  // const scoreContract = await scoreContractFactory.deploy();
+  // await scoreContract.deployed();
 
-  console.log('Score Contract deployed to:', scoreContract.address);
-  console.log('Score Contract deployed by:', owner.address);
+  // console.log('Score Contract deployed to:', scoreContract.address);
+  // console.log('Score Contract deployed by:', owner.address);
 
-  const calculateTenantScore = await scoreContract.calculateTenantScore('0xECcC87321FD9C54c51aB3FFfAfc19c5779cE9250');
-  console.log('calculateTenantScore', calculateTenantScore);
+  // const calculateTenantScore = await scoreContract.calculateTenantScore('0xECcC87321FD9C54c51aB3FFfAfc19c5779cE9250');
+  // console.log('calculateTenantScore', calculateTenantScore);
 
-  const tenantScore = await scoreContract.getScore('0xECcC87321FD9C54c51aB3FFfAfc19c5779cE9250');
-  console.log(`score for ${tenant.address}`, tenantScore.toNumber());
+  // const tenantScore = await scoreContract.getScore('0xECcC87321FD9C54c51aB3FFfAfc19c5779cE9250');
+  // console.log(`score for ${tenant.address}`, tenantScore.toNumber());
 
-  const addReview = await scoreContract.connect('0xECcC87321FD9C54c51aB3FFfAfc19c5779cE9250').addReview(0, 4, 'Quiet and clean place. but not convenient');
-  addReview.wait();
-  console.log('addReview', addReview);
+  // const addReview = await scoreContract.connect('0xECcC87321FD9C54c51aB3FFfAfc19c5779cE9250').addReview(0, 4, 'Quiet and clean place. but not convenient');
+  // addReview.wait();
+  // console.log('addReview', addReview);
 
-  const reviews = await scoreContract.getReviews(0);
-  console.log('reviews', reviews);
+  // const reviews = await scoreContract.getReviews(0);
+  // console.log('reviews', reviews);
 
-  const calculateOwnerScore = await scoreContract.calculateOwnerScore('0x684367aa423f4c1446d99ae234E172AE1BA2842c');
-  console.log('calculateOwnerScore', calculateOwnerScore);
+  // const calculateOwnerScore = await scoreContract.calculateOwnerScore('0x684367aa423f4c1446d99ae234E172AE1BA2842c');
+  // console.log('calculateOwnerScore', calculateOwnerScore);
 
-  const ownerScore = await scoreContract.getScore('0x684367aa423f4c1446d99ae234E172AE1BA2842c');
-  console.log(`score for ${owner.address}`, ownerScore.toNumber());
+  // const ownerScore = await scoreContract.getScore('0x684367aa423f4c1446d99ae234E172AE1BA2842c');
+  // console.log(`score for ${owner.address}`, ownerScore.toNumber());
 
 };
 

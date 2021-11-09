@@ -2,12 +2,14 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
+import "hardhat/console.sol";
 import "./IRent.sol";
 contract Rent is IRent {
     
     Contract[] contracts;
     mapping(address => uint[]) contractMap; // user address -> contract IDs
     mapping(uint => address[]) applicantMap; // contract Ids -> applicant addresses
+    mapping(address => uint[]) applicantContractMap; // applicant address -> contract Ids
     
     // events
     event ContractCreated(uint indexed id);
@@ -75,7 +77,7 @@ contract Rent is IRent {
     }
     
     function getContractById(uint id) 
-        external
+        public
         override
         view
         returns (Contract memory)
@@ -122,6 +124,22 @@ contract Rent is IRent {
         }
         return result;
     }
+
+    function getAppliedContracts(address _address)
+        external
+        view
+        returns (Contract[] memory)
+    {
+        uint[] memory contractIds = applicantContractMap[_address];
+
+        Contract[] memory result = new Contract[](contractIds.length);
+
+        for(uint i=0; i<contractIds.length; i++) {
+            result[i] = getContractById(contractIds[i]);
+        }
+        
+        return result;
+    }
     
     function acceptApplicant(uint contractId, address _address) 
         external
@@ -134,6 +152,8 @@ contract Rent is IRent {
         emit ContractLocked(contractId, _address);
         
         delete applicantMap[contractId];
+        // TODO remove the contract from applicantContractMap
+    
         contractMap[_address].push(contractId); // The tenant can see contract list in the tenant dashboard.
     }
     
@@ -143,6 +163,7 @@ contract Rent is IRent {
     {
         require(msg.sender != contracts[contractId].owner, "Owner can't apply.");
         applicantMap[contractId].push(msg.sender);
+        applicantContractMap[msg.sender].push(contractId);
         emit ApplicationAccepted(contractId, msg.sender);
     }
     
