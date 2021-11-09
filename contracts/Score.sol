@@ -12,8 +12,8 @@ import "./IRent.sol";
 
 contract Score {
 
-    Rent rent;
-    address rent_address = 0xf6395B9f0B5f6Ba3e58e69e316B9251e3AC601a8; // everytime Rent contract is deployed, this should be updated.
+    IRent internal rent;
+    address internal rent_address = 0xf6395B9f0B5f6Ba3e58e69e316B9251e3AC601a8; // everytime Rent contract is deployed, this should be updated.
 
     mapping(address => uint) scoreMap; // user address => score
 
@@ -27,6 +27,11 @@ contract Score {
 
     Review[] reviews;
     mapping(uint => uint[]) reviewMap; // contractId -> reviewIDs
+
+    modifier isAdmin() {
+        require(msg.sender == 0x684367aa423f4c1446d99ae234E172AE1BA2842c, "Only admin user can call this function.");
+        _;
+    }
 
     constructor() {
         rent = Rent(rent_address);
@@ -42,10 +47,12 @@ contract Score {
 
     function calculateTenantScore(address _address)
         public
+        isAdmin()
         returns (uint)
     {
         // get current score. Otherwise, default score is 500
         uint score = getScore(_address) | 500;
+        console.log('score', score);
         
         // get most current payment and check it's paid or over due or not paid // get from payment contract
         
@@ -64,7 +71,8 @@ contract Score {
         console.log('duration', duration);
 
         // calculate and save in the scoreMap
-        uint result = score + amount * 10 + duration * 1/1000;
+        uint result = score + amount * 10 + duration * 1/1000000;
+        console.log('result', result);
         scoreMap[_address] = result;
         return result;
     }
@@ -91,7 +99,7 @@ contract Score {
         return result;
     }
 
-    function calculateOwnerScore(address _address) public returns (uint) {
+    function calculateOwnerScore(address _address) public isAdmin() returns (uint) {
         // get current score Otherwise, default score is 500
         uint score = getScore(_address) | 500;
 
@@ -128,7 +136,7 @@ contract Score {
         console.log('priceSum', priceSum);
 
         // calculate and save in the scoreMap
-        uint result = score + starScore + duration * 1/1000 + priceSum * 10;
+        uint result = score + starScore + duration * 1/1000000 + priceSum * 10;
         scoreMap[_address] = result;
         return result;
     }

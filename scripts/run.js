@@ -34,7 +34,7 @@ const main = async () => {
   console.log('calculateTenantScore', calculateTenantScore);
 
   const tenantScore = await scoreContract.getScore('0xECcC87321FD9C54c51aB3FFfAfc19c5779cE9250');
-  console.log(`score for ${tenant.address}`, tenantScore)
+  console.log(`score for ${tenant.address}`, tenantScore.toNumber());
 
   const addReview = await scoreContract.connect('0xECcC87321FD9C54c51aB3FFfAfc19c5779cE9250').addReview(0, 4, 'Quiet and clean place. but not convenient');
   addReview.wait();
@@ -47,7 +47,7 @@ const main = async () => {
   console.log('calculateOwnerScore', calculateOwnerScore);
 
   const ownerScore = await scoreContract.getScore('0x684367aa423f4c1446d99ae234E172AE1BA2842c');
-  console.log(`score for ${owner.address}`, ownerScore)
+  console.log(`score for ${owner.address}`, ownerScore.toNumber());
 
 };
 

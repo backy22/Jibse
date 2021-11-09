@@ -110,15 +110,17 @@ export default function Home() {
         const activeRentsTxn = await rentContract.getContractsByState(0)
         let activeRentArray = []
         for(let rent of activeRentsTxn) {
-          activeRentArray.push({
-            contractId: rent.contractId.toNumber(),
-            location: rent.location,
-            startDate: new Date(rent.startDate * 1000),
-            endDate: new Date(rent.endDate * 1000),
-            owner: rent.owner,
-            price: rent.price.toNumber(),
-            state: rent.state
-          })
+          if (rent.owner.toLowerCase() !== currentAccount) {
+            activeRentArray.push({
+              contractId: rent.contractId.toNumber(),
+              location: rent.location,
+              startDate: new Date(rent.startDate * 1000),
+              endDate: new Date(rent.endDate * 1000),
+              owner: rent.owner,
+              price: rent.price.toNumber(),
+              state: rent.state
+            })
+          }
         }
         setActiveRents(activeRentArray)
       }
@@ -132,7 +134,6 @@ export default function Home() {
       if (rentContract) {
         const myRentsTxn = await rentContract.getContractsByAddress(currentAccount)
         let myRentArray = []
-        console.log('myRentsTxn', myRentsTxn);
         for(let rent of myRentsTxn) {
           myRentArray.push({
             contractId: rent.contractId.toNumber(),
@@ -210,7 +211,7 @@ export default function Home() {
               </Link>
               <div>{rent.price} eth/month</div>
               <Link href={`/room/${rent.contractId}`}>
-                <a>Detail</a>
+                <a>Room Detail</a>
               </Link>
             </div>
           ))}
@@ -228,9 +229,9 @@ export default function Home() {
               </Link>
               <div>{rent.price} eth/month</div>
               <Link href={`/room/${rent.contractId}`}>
-                <a>Detail</a>
+                <a>Room Detail</a>
               </Link>
-              <div className="self-center">
+              <div className="self-center mt-8">
                 <Button onClick={() => applyRent(rent.contractId)} buttonText="Apply" isLoading={applyingRent} />
               </div>
             </div>

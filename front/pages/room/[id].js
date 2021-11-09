@@ -67,10 +67,10 @@ const Room = () => {
                     tenant: rentTxn.tenant,
                     price: rentTxn.price.toNumber()
                 });
-                if (rentTxn.owner.toLowerCase() == value.account) {
+                if (rentTxn.owner.toLowerCase() === value.account) {
                     setIsOwner(true)
                 }
-                if (rentTxn.tenant.toLowerCase() == value.account) {
+                if (rentTxn.tenant.toLowerCase() === value.account) {
                     setIsTenant(true)
                 }
             } catch (error) {
@@ -85,6 +85,7 @@ const Room = () => {
             try {
                 const applicantTxn = await value.rentContract.getApplicants(contractId)
                 const applicantsArray = []
+                console.log('applicantTxn', applicantTxn)
                 for(let applicant of applicantTxn) {
                     applicantsArray.push(applicant)
                 }
@@ -99,7 +100,6 @@ const Room = () => {
             try {
                 const reviewsTxn = await value.scoreContract.getReviews(contractId, { gasLimit: 1000000 })
                 const reviewsArray = []
-                console.log('reviewsTxn', reviewsTxn)
                 for(let review of reviewsTxn) {
                     reviewsArray.push({
                         reviewId: review.reviewId.toNumber(),
@@ -117,7 +117,7 @@ const Room = () => {
         getRentDetail();
         getApplicants();
         getReviews();
-    }, [contractId, value.rentContract, value.scoreContract])
+    }, [contractId, value.rentContract, value.scoreContract, isOwner, isTenant])
 
     const acceptApplicant = async(applicant) => {
         try {
@@ -147,12 +147,16 @@ const Room = () => {
                                 &nbsp;~&nbsp;
                                 <Moment format="YYYY-MM-DD">{rentDetail.endDate.toString()}</Moment>
                                 </div>
-                                <Link href={`/user/${rentDetail.owner}`}>
-                                    <a>Owner Address: {shortenAddress(rentDetail.owner)}</a>
-                                </Link>
-                                <Link href={`/user/${rentDetail.tenant}`}>
-                                    <a>Tenant Address: {shortenAddress(rentDetail.tenant)}</a>
-                                </Link>
+                                <div>
+                                    <Link href={`/user/${rentDetail.owner}`}>
+                                        <a>Owner Address: {shortenAddress(rentDetail.owner)}</a>
+                                    </Link>
+                                </div>
+                                <div>
+                                    <Link href={`/user/${rentDetail.tenant}`}>
+                                        <a>Tenant Address: {shortenAddress(rentDetail.tenant)}</a>
+                                    </Link>
+                                </div>
                                 <div>{rentDetail.price} eth/month</div>
                                 {isTenant && (
                                     <div className="mt-6">
