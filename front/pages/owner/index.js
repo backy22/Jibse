@@ -1,13 +1,11 @@
 import { useContext, useState, useEffect } from "react";
-import { AuthContext } from ".."
 import { useForm, Controller } from "react-hook-form";
 import DatePicker from "react-datepicker";
-import Nav from '../../components/nav'
-import Link from 'next/link'
 import "react-datepicker/dist/react-datepicker.css";
 import Button from '../../components/button'
 import Modal from '../../components/modal'
-import Graph from '../../components/graph'
+import RoomComponent from '../../components/room-component';
+import AuthWrapper, { AuthContext } from "../../components/auth-wrapper";
 
 const OwnerDashboard = () => {
     const value = useContext(AuthContext);
@@ -46,26 +44,16 @@ const OwnerDashboard = () => {
     }, [value.account, value.myRents])
 
     return (
-        <>
-            <Nav currentAccount={value.account} />
+        <AuthWrapper>
             <section className="max-w-6xl mx-auto">
-                
                 <h1 className="text-center mb-12">Owner Dashboard</h1>
                 <div className="mb-6">
                     <Button onClick={openModal} buttonText="Create Room" isLoading={creatingRoom}/>
                 </div>
 
-                {myRooms && myRooms.map((rent) => (
-                    <div className="flex" key={rent.contractId}>
-                        <div className="bg-gray-purple p-4 mb-4 rounded mr-6">
-                            <Graph />
-                        </div>
-                        <div>
-                            <div>{rent.location}</div>
-                            <Link href={`/room/${rent.contractId}`}>
-                                <a>Room Detail</a>
-                            </Link>
-                        </div>
+                {myRooms.length > 0 && myRooms.map((rent) => (
+                    <div key={rent.contractId}>
+                        <RoomComponent rent={rent} />
                     </div>
                 ))}
 
@@ -124,7 +112,7 @@ const OwnerDashboard = () => {
                     </form>
                 </Modal>
             </section>
-        </>
+        </AuthWrapper>
     )
 }
 

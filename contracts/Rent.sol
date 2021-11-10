@@ -2,18 +2,20 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
+import "hardhat/console.sol";
 import "./IRent.sol";
 contract Rent is IRent {
     
     Contract[] contracts;
     mapping(address => uint[]) contractMap; // user address -> contract IDs
     mapping(uint => address[]) applicantMap; // contract Ids -> applicant addresses
+    mapping(address => uint[]) applicantContractMap; // applicant address -> contract Ids
     
     // events
     event ContractCreated(uint indexed id);
+    event AppliedContract(uint indexed id, address indexed applicant);
     event ContractLocked(uint indexed id, address indexed tenant);
     event DepositReceived(uint indexed id, address indexed owner, address indexed tenant);
-    event ApplicationAccepted(uint indexed id, address indexed applicant);
     
     modifier isOwner(uint contractId) {
         require(msg.sender == contracts[contractId].owner, "Only owner can call this function.");
@@ -75,7 +77,7 @@ contract Rent is IRent {
     }
     
     function getContractById(uint id) 
-        external
+        public
         override
         view
         returns (Contract memory)
@@ -122,6 +124,22 @@ contract Rent is IRent {
         }
         return result;
     }
+
+    function getAppliedContracts(address _address)
+        external
+        view
+        returns (Contract[] memory)
+    {
+        uint[] memory contractIds = applicantContractMap[_address];
+
+        Contract[] memory result = new Contract[](contractIds.length);
+
+        for(uint i=0; i<contractIds.length; i++) {
+            result[i] = getContractById(contractIds[i]);
+        }
+        
+        return result;
+    }
     
     function acceptApplicant(uint contractId, address _address) 
         external
@@ -130,11 +148,13 @@ contract Rent is IRent {
     {
         contracts[contractId].state = State.Locked;
         contracts[contractId].tenant = _address;
-        
-        emit ContractLocked(contractId, _address);
-        
+
         delete applicantMap[contractId];
+        // TODO remove the contract from applicantContractMap
+    
         contractMap[_address].push(contractId); // The tenant can see contract list in the tenant dashboard.
+
+        emit ContractLocked(contractId, _address);
     }
     
     function applyForContract(uint contractId)
@@ -143,7 +163,8 @@ contract Rent is IRent {
     {
         require(msg.sender != contracts[contractId].owner, "Owner can't apply.");
         applicantMap[contractId].push(msg.sender);
-        emit ApplicationAccepted(contractId, msg.sender);
+        applicantContractMap[msg.sender].push(contractId);
+        emit AppliedContract(contractId, msg.sender);
     }
     
     function getApplicants(uint contractId)
@@ -163,7 +184,7 @@ contract Rent is IRent {
         inState(contractId, State.Locked)
         payable
     {
-        require(msg.value == contracts[contractId].price, "Price is incorrect.");
+        //require(msg.value == contracts[contractId].price, "Price is incorrect.");
         
         payable(contracts[contractId].owner).transfer(msg.value);
         contracts[contractId].state = State.Succeeded;

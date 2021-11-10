@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import Link from 'next/link'
-import { AuthContext } from ".."
 import { useRouter } from 'next/router'
-import Nav from '../../components/nav'
 import Moment from 'react-moment';
 import Button from '../../components/button'
 import Modal from '../../components/modal'
@@ -10,6 +8,7 @@ import { useForm } from "react-hook-form";
 import StarRatings from 'react-star-ratings';
 import { shortenAddress } from '../../utils/shorten-address';
 import Graph from '../../components/graph';
+import AuthWrapper, { AuthContext } from '../../components/auth-wrapper'
 
 const Room = () => {
     const router = useRouter()
@@ -23,7 +22,8 @@ const Room = () => {
     const [rating, setRating] = useState(0)
     const [isOwner, setIsOwner] = useState(false)
     const [isTenant, setIsTenant] = useState(false)
-    const [reviewing, setReviwing] = useState(false) 
+    const [reviewing, setReviwing] = useState(false)
+    const [bills, setBills] = useState([])
 
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
 
@@ -58,6 +58,7 @@ const Room = () => {
         const getRentDetail = async() => {
             try {
                 const rentTxn = await value.rentContract.getContractById(contractId)
+                console.log('rentTxn', rentTxn)
                 setRentDetail({
                     contractId: rentTxn.contractId.toNumber(),
                     location: rentTxn.location,
@@ -65,7 +66,8 @@ const Room = () => {
                     endDate: new Date(rentTxn.endDate * 1000),
                     owner: rentTxn.owner,
                     tenant: rentTxn.tenant,
-                    price: rentTxn.price.toNumber()
+                    price: rentTxn.price.toNumber(),
+                    state: rentTxn.state,
                 });
                 if (rentTxn.owner.toLowerCase() === value.account) {
                     setIsOwner(true)
@@ -79,9 +81,6 @@ const Room = () => {
         }
 
         const getApplicants = async() => {
-            if (!isOwner) {
-                return
-            }
             try {
                 const applicantTxn = await value.rentContract.getApplicants(contractId)
                 const applicantsArray = []
@@ -93,6 +92,27 @@ const Room = () => {
                 setApplicants(applicantsArray);
             } catch (error) {
                 console.log('Get applicants Error: ', error)
+            }
+        }
+
+        const getBills = async() => {
+            try {
+                const billsTxn = await value.paymentContract.getBillsByContractId(contractId, { gasLimit: 1000000 })
+                const billsArray = []
+                for(let bill of billsTxn) {
+                    billsArray.push({
+                        billId: bill.id.toNumber(),
+                        contractId: bill.contractId.toNumber(),
+                        billingDate: new Date(bill.billingDate * 1000),
+                        payee: bill.payee,
+                        payer: bill.payer,
+                        state: bill,state
+                    })
+                }
+                console.log('billsArray', billsArray)
+                setBills(billsArray)
+            } catch (error) {
+                console.log('Get reviews Error: ', error)
             }
         }
 
@@ -114,10 +134,19 @@ const Room = () => {
             }
         }
 
-        getRentDetail();
-        getApplicants();
-        getReviews();
-    }, [contractId, value.rentContract, value.scoreContract, isOwner, isTenant])
+        if (value.rentContract) {
+            getRentDetail();
+        }
+        if (value.rentContract && isOwner) {
+            getApplicants();
+        }
+        if (value.scoreContract) {
+            getReviews();
+        }
+        if (value.paymentContract) {
+            getBills();
+        }
+    }, [contractId, value.rentContract, value.scoreContract, value.paymentContract, isOwner, isTenant])
 
     const acceptApplicant = async(applicant) => {
         try {
@@ -129,9 +158,18 @@ const Room = () => {
         }
     }
 
+    async function createBill() {
+        try {
+            const createBillTxn = await value.paymentContract.createBill(contractId, { gasLimit: 1000000 })
+            await createBillTxn.wait();
+            console.log('createBillTxt: ', createBillTxn);
+        } catch (error) {
+            console.log('Create bill Error: ', error)
+        }
+    }
+
     return (
-        <>
-            <Nav currentAccount={value.account} className="max-w-6xl mx-auto" />
+        <AuthWrapper>
             <section className="max-w-6xl mx-auto">
                 <h1 className="text-center mb-12">Room Dashboard</h1>
                 {rentDetail && (
@@ -163,6 +201,11 @@ const Room = () => {
                                         <Button buttonText="Review this room" onClick={openModal} />
                                     </div>
                                 )}
+                                {isOwner && (
+                                    <div className="mt-6">
+                                        <Button buttonText="Create bill" onClick={createBill} />
+                                    </div>
+                                )}
                             </div>
                         </div>
                         {isOwner && applicants.length > 0 && (
@@ -176,6 +219,11 @@ const Room = () => {
                                         </div>
                                     ))}
                                 </div>
+                            </>
+                        )}
+                        {bills.length > 0 && (
+                            <>
+                                <h4>Payment History</h4>
                             </>
                         )}
                         {reviews.length > 0 && (
@@ -226,7 +274,7 @@ const Room = () => {
                     </form>
                 </Modal>
             </section>
-        </>
+        </AuthWrapper>
     )
 }
 
