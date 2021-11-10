@@ -11,6 +11,7 @@ import Button from '../components/button'
 import { RENT_CONTRACT_ADDRESS,  SCORE_CONTRACT_ADDRESS, PAYMENT_CONTRACT_ADDRESS } from '../utils/constants'
 import { shortenAddress } from '../utils/shorten-address';
 import Graph from '../components/graph'
+import { RentState } from '../utils/enum';
 
 const defaultContext = { account: null, rentContract: null, scoreContract: null, paymentContract: null, myRents: [], appliedRents: [] }
 export const AuthContext = React.createContext(defaultContext)
@@ -157,7 +158,8 @@ export default function Home() {
                 endDate: new Date(appliedRent.endDate * 1000),
                 owner: appliedRent.owner,
                 tenant: appliedRent.tenant,
-                price: appliedRent.price.toNumber()
+                price: appliedRent.price.toNumber(),
+                state: appliedRent.state
             })
           }
         }
@@ -171,7 +173,7 @@ export default function Home() {
 
   const getActiveRents = async() => {
     try {
-      const activeRentsTxn = await rentContract.getContractsByState(0)
+      const activeRentsTxn = await rentContract.getContractsByState(RentState.Active)
       let activeRentArray = []
       let appliedRentContractIds = appliedRents.map((rent) => rent.contractId);
       console.log('appliedRentContractIds', appliedRentContractIds)

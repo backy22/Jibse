@@ -55,7 +55,9 @@ const OwnerDashboard = () => {
                 </div>
 
                 {myRooms.length > 0 && myRooms.map((rent) => (
-                    <RoomComponent rent={rent} />
+                    <div key={rent.contractId}>
+                        <RoomComponent rent={rent} />
+                    </div>
                 ))}
 
                 <Modal 
