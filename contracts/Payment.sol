@@ -2,10 +2,12 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
+import "@chainlink/contracts/src/v0.8/interfaces/KeeperCompatibleInterface.sol";
+
 import "./IRent.sol";
 import "./Rent.sol";
 
-contract Payment {
+contract Payment is KeeperCompatibleInterface {
     
     enum State { 
         Pending,
@@ -27,11 +29,50 @@ contract Payment {
     address internal rentContract = 0x6FddFDbEf1bb65a137E3D17B987EBB35dA9AAb98;
     
     Bill[] bills;
+    address[] autoPaymentSetups;
+    
     mapping(address => uint[]) userAddressBillMap; // user address => bill IDs
-    mapping(uint => uint[]) contractBillMap; // contract ID => bill IDs
+    mapping(uint => uint[]) contractBillMap; // contract IDs => bill IDs
+    
+    modifier isContractValid(uint contractId) {
+        IRent.Contract memory _contract = rent.getContractById(contractId);
+        require(_contract.state == IRent.State.Succeeded, "The contract is in an invalid state.");
+        _;
+    }
     
     constructor() {
         rent = Rent(rentContract);
+    }
+    
+    function setAutoPayment(address _address, bool autoPayment) 
+        external
+    {
+        for(uint i=0; i<autoPaymentSetups.length; i++)
+        {
+            if(autoPaymentSetups[i] == _address) {
+                if(!autoPayment) {
+                    delete autoPaymentSetups[i];
+                }
+                return;
+            }
+        }
+        if(autoPayment) {
+            autoPaymentSetups.push(_address);
+        }
+    }
+    
+    function isAutoPaymentSetup(address _address) 
+        external
+        view
+        returns(bool)
+    {
+        for(uint i=0; i<autoPaymentSetups.length; i++)
+        {
+            if(autoPaymentSetups[i] == _address) {
+                return true;
+            }
+        }
+        return false;
     }
     
     function createBill(uint contractId) external {
@@ -88,14 +129,39 @@ contract Payment {
     }
     
     function payBill(uint billId)
-        external
+        public
         payable
     {
-        require(bills[billId].state != State.Paid, "This bill was already paid.");
+        require(bills[billId].state == State.Pending, "This bill was already paid or cancelled.");
         require(bills[billId].price == msg.value, "The price is incorrect.");
         bills[billId].state = State.Paid;
         bills[billId].payer = msg.sender;
         payable(bills[billId].payee).transfer(msg.value);
+        // Make tenant pay to our Keeper?
     }
+    
+    function checkUpkeep(bytes calldata /* checkData */) 
+        external
+        override
+        returns (bool upkeepNeeded, bytes memory performData) 
+    {
+        upkeepNeeded = autoPaymentSetups.length > 0;
+        // return (upkeepNeeded, abi.encode(autoPaymentSetups));
+    }
+
+    function performUpkeep(bytes calldata performData) 
+        external
+        override
+        payable
+    {
+        // address[] _addresses = abi.decode(performData, (address[]));
+        for(uint i=0; i<autoPaymentSetups.length; i++) {
+            address user = autoPaymentSetups[i];
+            uint lastBillId = userAddressBillMap[user][userAddressBillMap[user].length-1];
+            if(bills[lastBillId].state == State.Pending) {
+                payBill(lastBillId);
+            }
+        }
+    }   
     
 }
