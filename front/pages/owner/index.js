@@ -1,12 +1,11 @@
 import { useContext, useState, useEffect } from "react";
-import { AuthContext } from ".."
 import { useForm, Controller } from "react-hook-form";
 import DatePicker from "react-datepicker";
-import Nav from '../../components/nav'
 import "react-datepicker/dist/react-datepicker.css";
 import Button from '../../components/button'
 import Modal from '../../components/modal'
 import RoomComponent from '../../components/room-component';
+import AuthWrapper, { AuthContext } from "../../components/auth-wrapper";
 
 const OwnerDashboard = () => {
     const value = useContext(AuthContext);
@@ -45,10 +44,8 @@ const OwnerDashboard = () => {
     }, [value.account, value.myRents])
 
     return (
-        <>
-            <Nav currentAccount={value.account} />
+        <AuthWrapper>
             <section className="max-w-6xl mx-auto">
-                
                 <h1 className="text-center mb-12">Owner Dashboard</h1>
                 <div className="mb-6">
                     <Button onClick={openModal} buttonText="Create Room" isLoading={creatingRoom}/>
@@ -115,7 +112,7 @@ const OwnerDashboard = () => {
                     </form>
                 </Modal>
             </section>
-        </>
+        </AuthWrapper>
     )
 }
 

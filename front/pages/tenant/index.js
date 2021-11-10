@@ -1,12 +1,11 @@
 import { useContext, useEffect, useState } from "react";
-import { AuthContext } from ".."
 import Link from 'next/link'
-import Nav from '../../components/nav'
 import RoomComponent from '../../components/room-component';
 import Button from '../../components/button';
 import { ethers } from 'ethers';
 import { RentState, BillState } from "../../utils/enum";
 import Moment from 'react-moment';
+import AuthWrapper, { AuthContext } from "../../components/auth-wrapper";
 
 const TenantDashboard = () => {
     const value = useContext(AuthContext);
@@ -31,11 +30,10 @@ const TenantDashboard = () => {
         const getBills = async() => {
             try {
                 const getBillsTxn = await value.paymentContract.getBillsByAddress(value.account)
-                console.log('getBillTxt', getBillsTxn)
                 const billsArray = []
                 for(let bill of getBillsTxn) {
                     billsArray.push({
-                        id: bill.id.toNumber(),
+                        id: bill.billId.toNumber(),
                         contractId: bill.contractId.toNumber(),
                         price: bill.price.toNumber(),
                         billingDate: new Date(bill.billingDate * 1000),
@@ -77,8 +75,7 @@ const TenantDashboard = () => {
     }
 
     return (
-        <>
-            <Nav currentAccount={value.account} />
+        <AuthWrapper>
             <section className="max-w-6xl mx-auto">
                 <h1 className="text-center mb-12">Tenant Dashboard</h1>
                 <div className="mb-8">
@@ -144,7 +141,7 @@ const TenantDashboard = () => {
                     </>
                 )}
             </section>
-        </>
+        </AuthWrapper>
     )
 }
 

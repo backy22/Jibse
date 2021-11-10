@@ -13,7 +13,7 @@ import "./IRent.sol";
 contract Score {
 
     IRent internal rent;
-    address internal rent_address = 0x6F89Cc3D89f29D327740d08C024267c8559F04a4; // everytime Rent contract is deployed, this should be updated.
+    address internal rent_address = 0x337fECBC7BE3312a9d65c947072C4A1355D99C75; // everytime Rent contract is deployed, this should be updated.
 
     mapping(address => uint) scoreMap; // user address => score
 
@@ -27,6 +27,11 @@ contract Score {
 
     Review[] reviews;
     mapping(uint => uint[]) reviewMap; // contractId -> reviewIDs
+
+    // events
+    event TenantScoreCalculated(address indexed tenant, uint indexed score);
+    event ReviewAdded(uint indexed id);
+    event OwnerScoreCalculated(address indexed owner, uint indexed score);
 
     modifier isAdmin() {
         require(msg.sender == 0x684367aa423f4c1446d99ae234E172AE1BA2842c, "Only admin user can call this function.");
@@ -48,7 +53,6 @@ contract Score {
     function calculateTenantScore(address _address)
         public
         isAdmin()
-        returns (uint)
     {
         // get current score. Otherwise, default score is 500
         uint score = getScore(_address) | 500;
@@ -74,7 +78,8 @@ contract Score {
         uint result = score + amount * 10 + duration * 1/1000000;
         console.log('result', result);
         scoreMap[_address] = result;
-        return result;
+
+        emit TenantScoreCalculated(_address, result);
     }
 
     function addReview(uint _contractId, uint _star, string memory _review) public {
@@ -87,6 +92,8 @@ contract Score {
             review: _review
         }));
         reviewMap[_contractId].push(id);
+
+        emit ReviewAdded(_contractId);
     }
 
     function getReviews(uint _contractId) public view returns (Review[] memory){
@@ -99,7 +106,7 @@ contract Score {
         return result;
     }
 
-    function calculateOwnerScore(address _address) public isAdmin() returns (uint) {
+    function calculateOwnerScore(address _address) public isAdmin() {
         // get current score Otherwise, default score is 500
         uint score = getScore(_address) | 500;
 
@@ -138,6 +145,7 @@ contract Score {
         // calculate and save in the scoreMap
         uint result = score + starScore + duration * 1/1000000 + priceSum * 10;
         scoreMap[_address] = result;
-        return result;
+
+        emit OwnerScoreCalculated(_address, result);
     }
 }

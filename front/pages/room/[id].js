@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import Link from 'next/link'
-import { AuthContext } from ".."
 import { useRouter } from 'next/router'
-import Nav from '../../components/nav'
 import Moment from 'react-moment';
 import Button from '../../components/button'
 import Modal from '../../components/modal'
@@ -10,6 +8,7 @@ import { useForm } from "react-hook-form";
 import StarRatings from 'react-star-ratings';
 import { shortenAddress } from '../../utils/shorten-address';
 import Graph from '../../components/graph';
+import AuthWrapper, { AuthContext } from '../../components/auth-wrapper'
 
 const Room = () => {
     const router = useRouter()
@@ -170,8 +169,7 @@ const Room = () => {
     }
 
     return (
-        <>
-            <Nav currentAccount={value.account} className="max-w-6xl mx-auto" />
+        <AuthWrapper>
             <section className="max-w-6xl mx-auto">
                 <h1 className="text-center mb-12">Room Dashboard</h1>
                 {rentDetail && (
@@ -276,7 +274,7 @@ const Room = () => {
                     </form>
                 </Modal>
             </section>
-        </>
+        </AuthWrapper>
     )
 }
 

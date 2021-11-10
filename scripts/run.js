@@ -2,28 +2,43 @@ const main = async () => {
   const [owner, tenant] = await hre.ethers.getSigners();
 
   // Rent Contract
-  const rentContractFactory = await hre.ethers.getContractFactory('Rent');
-  const rentContract = await rentContractFactory.deploy();
-  await rentContract.deployed();
+  // const rentContractFactory = await hre.ethers.getContractFactory('Rent');
+  // const rentContract = await rentContractFactory.deploy();
+  // await rentContract.deployed();
 
-  console.log('Rent Contract deployed to:', rentContract.address);
-  console.log('Rent Contract deployed by:', owner.address);
+  // console.log('Rent Contract deployed to:', rentContract.address);
+  // console.log('Rent Contract deployed by:', owner.address);
 
-  const addContract = await rentContract.addContract(1000,2000,'Toronto',1000)
-  addContract.wait();
+  // const addContract = await rentContract.addContract(1000,2000,'Toronto',1)
+  // addContract.wait();
 
   // const activeRents = await rentContract.getContractsByState(0);
   // console.log('activeRents', activeRents);
 
-  const applyContract = await rentContract.connect(tenant).applyForContract(0);
-  const applicants = await rentContract.getApplicants(0);
-  console.log('Applicants', applicants);
+  //const applyContract = await rentContract.connect(tenant).applyForContract(0);
 
-  const appliedContracts = await rentContract.getAppliedContracts(tenant.address);
-  console.log('Applied contracts', appliedContracts);
+  // const applicants = await rentContract.getApplicants(0);
+  // console.log('Applicants', applicants);
 
-  // const acceptContract = await rentContract.acceptApplicant(0, tenant.address);
+  // const appliedContracts = await rentContract.getAppliedContracts(tenant.address);
+  // console.log('Applied contracts', appliedContracts);
+
+  //const acceptContract = await rentContract.acceptApplicant(0, tenant.address);
   // console.log('Accept', tenant.address);
+
+  // const payDeposit = await rentContract.connect(tenant).payDeposit(0, { value: ethers.utils.parseEther('1.0') });
+  // console.log('pay deposit', payDeposit);
+
+  // Payment Contract
+  // const paymentContractFactory = await hre.ethers.getContractFactory('Payment');
+  // const paymentContract = await paymentContractFactory.deploy();
+  // await paymentContract.deployed();
+
+  // console.log('Payment Contract deployed to:', paymentContract.address);
+  // console.log('Payment Contract deployed by:', owner.address);
+
+  // const createBillTxn = await paymentContract.createBill(0);
+  // console.log('createBillTxn', createBillTxn)
 
   // Score Contract
   // const scoreContractFactory = await hre.ethers.getContractFactory('Score');

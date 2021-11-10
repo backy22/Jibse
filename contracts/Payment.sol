@@ -2,6 +2,7 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
+import "hardhat/console.sol";
 import "./IRent.sol";
 import "./Rent.sol";
 
@@ -14,7 +15,7 @@ contract Payment {
     }
     
     struct Bill {
-        uint id;
+        uint billId;
         uint contractId;
         uint price;
         uint billingDate;
@@ -24,12 +25,16 @@ contract Payment {
     }
     
     IRent internal rent;
-    address internal rentContract = 0x6F89Cc3D89f29D327740d08C024267c8559F04a4;
+    address internal rentContract = 0x337fECBC7BE3312a9d65c947072C4A1355D99C75;
     
     Bill[] bills;
     mapping(address => uint[]) userAddressBillMap; // user address => bill IDs
     mapping(uint => uint[]) contractBillMap; // contract ID => bill IDs
-    
+
+    // events
+    event BillCreated(uint indexed id);
+    event BillPaid(uint indexed id);
+
     constructor() {
         rent = Rent(rentContract);
     }
@@ -39,12 +44,12 @@ contract Payment {
 
         require(block.timestamp < _contract.endDate, "The contract has already ended.");
         require(_contract.state == IRent.State.Succeeded, "The contract is in an invalid state.");
-        
+
         uint billingDate = _contract.startDate + (1 + contractBillMap[contractId].length) * 30 days;
         
         uint id = bills.length;
         bills.push(Bill({
-            id: id,
+            billId: id,
             contractId: contractId,
             price: _contract.price,
             billingDate: billingDate,
@@ -55,6 +60,8 @@ contract Payment {
 
         contractBillMap[contractId].push(id);
         userAddressBillMap[_contract.tenant].push(id);
+
+        emit BillCreated(id);
     }
     
     function getBillsByAddress(address _address)
@@ -92,10 +99,12 @@ contract Payment {
         payable
     {
         require(bills[billId].state != State.Paid, "This bill was already paid.");
-        require(bills[billId].price == msg.value, "The price is incorrect.");
+        //require(bills[billId].price == msg.value, "The price is incorrect.");
         bills[billId].state = State.Paid;
         bills[billId].payer = msg.sender;
         payable(bills[billId].payee).transfer(msg.value);
+
+        emit BillPaid(billId);
     }
     
 }

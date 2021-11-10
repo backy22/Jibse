@@ -13,9 +13,9 @@ contract Rent is IRent {
     
     // events
     event ContractCreated(uint indexed id);
+    event AppliedContract(uint indexed id, address indexed applicant);
     event ContractLocked(uint indexed id, address indexed tenant);
     event DepositReceived(uint indexed id, address indexed owner, address indexed tenant);
-    event ApplicationAccepted(uint indexed id, address indexed applicant);
     
     modifier isOwner(uint contractId) {
         require(msg.sender == contracts[contractId].owner, "Only owner can call this function.");
@@ -148,13 +148,13 @@ contract Rent is IRent {
     {
         contracts[contractId].state = State.Locked;
         contracts[contractId].tenant = _address;
-        
-        emit ContractLocked(contractId, _address);
-        
+
         delete applicantMap[contractId];
         // TODO remove the contract from applicantContractMap
     
         contractMap[_address].push(contractId); // The tenant can see contract list in the tenant dashboard.
+
+        emit ContractLocked(contractId, _address);
     }
     
     function applyForContract(uint contractId)
@@ -164,7 +164,7 @@ contract Rent is IRent {
         require(msg.sender != contracts[contractId].owner, "Owner can't apply.");
         applicantMap[contractId].push(msg.sender);
         applicantContractMap[msg.sender].push(contractId);
-        emit ApplicationAccepted(contractId, msg.sender);
+        emit AppliedContract(contractId, msg.sender);
     }
     
     function getApplicants(uint contractId)
@@ -184,7 +184,7 @@ contract Rent is IRent {
         inState(contractId, State.Locked)
         payable
     {
-        require(msg.value == contracts[contractId].price, "Price is incorrect.");
+        //require(msg.value == contracts[contractId].price, "Price is incorrect.");
         
         payable(contracts[contractId].owner).transfer(msg.value);
         contracts[contractId].state = State.Succeeded;

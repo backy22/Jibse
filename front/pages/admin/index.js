@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
-import { AuthContext } from ".."
-import Nav from '../../components/nav'
 import Button from '../../components/button'
+import AuthWrapper, { AuthContext } from "../../components/auth-wrapper";
 
 const Admin = () => {
     const value = useContext(AuthContext);
@@ -17,13 +16,12 @@ const Admin = () => {
     }
 
     return (
-        <>
-            <Nav currentAccount={value.account} />
+        <AuthWrapper>
             <section className="max-w-6xl mx-auto">
                 <h1 className="text-center mb-12">Admin</h1>
                 <Button onClick={() => calculateTenantScore('0xECcC87321FD9C54c51aB3FFfAfc19c5779cE9250')} buttonText="Calculate Tenant Score"/>
             </section>
-        </>
+        </AuthWrapper>
     )
 }
 
