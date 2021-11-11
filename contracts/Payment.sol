@@ -96,7 +96,7 @@ contract Payment is KeeperCompatibleInterface {
             billingDate: billingDate,
             state: State.Pending,
             payee: _contract.owner,
-            payer: address(0)
+            payer: _contract.tenant
         }));
 
         contractBillMap[contractId].push(id);
@@ -140,11 +140,10 @@ contract Payment is KeeperCompatibleInterface {
         payable
     {
         require(bills[billId].state == State.Pending, "This bill was already paid or cancelled.");
-        require(bills[billId].price == msg.value, "The price is incorrect.");
+        require(bills[billId].payer.balance >= bills[billId].price, "Payer has not enough balance.");
+        
         bills[billId].state = State.Paid;
-        bills[billId].payer = msg.sender; // Keeper address?
-        payable(bills[billId].payee).transfer(msg.value);
-        // Make tenant pay to our Keeper?
+        payable(bills[billId].payee).transfer(bills[billId].price);
         emit BillPaid(billId);
     }
     
@@ -160,7 +159,6 @@ contract Payment is KeeperCompatibleInterface {
     function performUpkeep(bytes calldata performData) 
         external
         override
-        payable
     {
         // address[] _addresses = abi.decode(performData, (address[]));
         for(uint i=0; i<autoPaymentSetups.length; i++) {

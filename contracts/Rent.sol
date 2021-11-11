@@ -71,6 +71,7 @@ contract Rent is IRent {
         for (uint i=0; i < allOwners.length; i++) {
             if (allOwners[i] == msg.sender) {
                 doesListContains = true;
+                break;
             }
         }
 
@@ -79,21 +80,6 @@ contract Rent is IRent {
         }
         
         emit ContractCreated(id);
-    }
-    
-    function addContracts(
-        Contract[] calldata _contracts) 
-        external
-    {
-        for(uint i=0; i<_contracts.length; i++)
-        {
-            this.addContract(
-                _contracts[i].startDate,
-                _contracts[i].endDate,
-                _contracts[i].location,
-                _contracts[i].price
-            );
-        } 
     }
     
     function getContractById(uint id) 
@@ -212,7 +198,7 @@ contract Rent is IRent {
         inState(contractId, State.Locked)
         payable
     {
-        //require(msg.value == contracts[contractId].price, "Price is incorrect.");
+       //require(msg.value == contracts[contractId].price, "Price is incorrect.");
         
         payable(contracts[contractId].owner).transfer(msg.value);
         contracts[contractId].state = State.Succeeded;

@@ -19,7 +19,7 @@ interface IRent {
         address tenant;
         string location;
         State state;
-        uint price;
+        uint price; // unit : wei (1 ether == 1e18 wei)
     }
    
    function getContractById(uint id) external view returns (Contract memory);
