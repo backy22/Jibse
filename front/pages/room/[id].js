@@ -6,10 +6,10 @@ import Button from '../../components/button'
 import Modal from '../../components/modal'
 import { useForm } from "react-hook-form";
 import StarRatings from 'react-star-ratings';
-import { shortenAddress } from '../../utils/shorten-address';
 import Graph from '../../components/graph';
 import { AuthContext } from '../../components/auth-wrapper'
 import { isSameAddresses } from '../../utils/is-same-addresses';
+import { isEmptyAddress } from "../../utils/address"; 
 
 const Room = () => {
     const router = useRouter()
@@ -172,31 +172,42 @@ const Room = () => {
     return (
         <div>
             <section className="max-w-6xl mx-auto">
-                <h1 className="text-center mb-12">Room Dashboard</h1>
+                <h1 className="text-center my-20 font-black gradient-pink-green font-sans text-6xl">Room Dashboard</h1>
                 {rentDetail && (
                     <>
                         <div className="flex">
-                            <div className="bg-gray-purple p-4 mb-4 rounded mr-6">
+                            <div className="bg-gray-purple p-4 mb-4 rounded mr-6 w-1/2">
                                 <Graph />
                             </div>
-                            <div>
-                                <div>{rentDetail.location}</div>
-                                <div>Rent Date:
-                                <Moment format="YYYY-MM-DD">{rentDetail.startDate.toString()}</Moment>
-                                &nbsp;~&nbsp;
-                                <Moment format="YYYY-MM-DD">{rentDetail.endDate.toString()}</Moment>
+                            <div className="self-end mb-6">
+                                <div className="text-left mb-3">
+                                  <span className="font-extrabold text-8xl">{rentDetail.price}</span> ETH / month
                                 </div>
                                 <div>
-                                    <Link href={`/user/${rentDetail.owner}`}>
-                                        <a>Owner Address: {shortenAddress(rentDetail.owner)}</a>
-                                    </Link>
+                                  <span className="font-bold">Address: </span>{rentDetail.location}
                                 </div>
                                 <div>
+                                  <span className="font-bold">Start date: </span>
+                                  <Moment format="YYYY-MM-DD">{rentDetail.startDate.toString()}</Moment>
+                                </div>
+                                <div>
+                                  <span className="font-bold">End date: </span>
+                                  <Moment format="YYYY-MM-DD">{rentDetail.endDate.toString()}</Moment>
+                                </div>
+                                <div>
+                                  <span className="font-bold">Owner: </span>
+                                  <Link href={`/user/${rentDetail.owner}`}>
+                                    <a className="underline">{rentDetail.owner}</a>
+                                  </Link>
+                                </div>
+                                {isEmptyAddress(rentDetail.tenant) && (
+                                  <div>
+                                    <span>Tenant: </span>
                                     <Link href={`/user/${rentDetail.tenant}`}>
-                                        <a>Tenant Address: {shortenAddress(rentDetail.tenant)}</a>
+                                      <a className="underline">{rentDetail.tenant}</a>
                                     </Link>
-                                </div>
-                                <div>{rentDetail.price} eth/month</div>
+                                  </div>
+                                )}
                                 {isTenant && (
                                     <div className="mt-6 w-40">
                                         <Button buttonText="Review this room" onClick={openModal} />
@@ -204,7 +215,7 @@ const Room = () => {
                                 )}
                                 {isOwner && (
                                     <div className="mt-6 w-40">
-                                        <Button buttonText="Create bill" onClick={createBill} />
+                                        <Button buttonText="Create a bill" onClick={createBill} />
                                     </div>
                                 )}
                             </div>

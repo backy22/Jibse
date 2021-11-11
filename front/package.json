@@ -8,8 +8,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@babel/core": "^7.16.0",
     "@babel/eslint-parser": "^7.16.3",
     "@babel/plugin-proposal-decorators": "^7.16.0",
+    "@emotion/react": "^11.5.0",
+    "@emotion/styled": "^11.3.0",
+    "@mui/material": "^5.1.0",
+    "babel-loader": "^8.2.3",
     "babel-plugin-module-resolver": "^4.1.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
@@ -34,6 +39,8 @@
     "eslint": "7.32.0",
     "eslint-config-next": "12.0.2",
     "postcss": "^8.3.11",
-    "tailwindcss": "^2.2.19"
+    "tailwindcss": "^2.2.19",
+    "chart.js": "^3.6.0",
+    "moment": "^2.29.1"
   }
 }
