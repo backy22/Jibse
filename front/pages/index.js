@@ -25,7 +25,7 @@ export default function Home() {
   return (
     <div>
       <section className="max-w-6xl mx-auto">
-        <h1 className="text-center my-12 font-black gradient-pink-green font-sans text-6xl">
+        <h1 className="text-center my-20 font-black gradient-pink-green font-sans text-6xl">
           Rooms in Toronto 🗼
         </h1>
         <div className="grid grid-cols-3 gap-4 font-mono">

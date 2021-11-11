@@ -172,7 +172,7 @@ const Room = () => {
     return (
         <div>
             <section className="max-w-6xl mx-auto">
-                <h1 className="text-center my-12 font-black gradient-pink-green font-sans text-6xl">Room Dashboard</h1>
+                <h1 className="text-center my-20 font-black gradient-pink-green font-sans text-6xl">Room Dashboard</h1>
                 {rentDetail && (
                     <>
                         <div className="flex">
@@ -215,7 +215,7 @@ const Room = () => {
                                 )}
                                 {isOwner && (
                                     <div className="mt-6 w-40">
-                                        <Button buttonText="Create bill" onClick={createBill} />
+                                        <Button buttonText="Create a bill" onClick={createBill} />
                                     </div>
                                 )}
                             </div>
