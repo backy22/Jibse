@@ -48,7 +48,7 @@ const OwnerDashboard = () => {
         <AuthWrapper>
             <section className="max-w-6xl mx-auto">
                 <h1 className="text-center mb-12">Owner Dashboard</h1>
-                <div className="mb-6">
+                <div className="mb-6 w-40">
                     <Button onClick={openModal} buttonText="Create Room" isLoading={creatingRoom}/>
                 </div>
 
@@ -107,7 +107,7 @@ const OwnerDashboard = () => {
                             <input className="border-2 p-2 w-full bg-light-purple" placeholder="Price" {...register("price", { required: true })} />
                             {errors.exampleRequired && <span>This field is required</span>}
                         </div>
-                        <div className="mt-12 self-center">
+                        <div className="mt-12 self-center w-41">
                             <Button type="submit" buttonText="Save" />
                         </div>
                     </form>

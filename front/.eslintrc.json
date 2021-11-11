@@ -3,7 +3,8 @@
     "next/babel",
     "eslint:recommended",
     "plugin:prettier/recommended",
-    "plugin:react-hooks/recommended"
+    "plugin:react-hooks/recommended",
+    "prettier/react"
   ],
   "plugins": [
     "react-hooks"

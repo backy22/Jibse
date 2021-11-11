@@ -106,27 +106,25 @@ const AuthWrapper = ({ children }) => {
     getContracts();
   }, [account])
 
-  // get all rnets & get events
+  // get all rents & get events
   useEffect(() => {
     const getAllRents = async() => {
       try {
-        if (rentContract) {
-          const allRentsTxn = await rentContract.getAllContracts()
-          let allRentsArray = []
-          for(let rent of allRentsTxn) {
-            allRentsArray.push({
-              contractId: rent.contractId.toNumber(),
-              location: rent.location,
-              startDate: new Date(rent.startDate * 1000),
-              endDate: new Date(rent.endDate * 1000),
-              owner: rent.owner,
-              tenant: rent.tenant,
-              price: rent.price.toNumber(),
-              state: rent.state
-            })
-          }
-          setAllRents(allRentsArray)
+        const allRentsTxn = await rentContract.getAllContracts()
+        let allRentsArray = []
+        for(let rent of allRentsTxn) {
+          allRentsArray.push({
+            contractId: rent.contractId.toNumber(),
+            location: rent.location,
+            startDate: new Date(rent.startDate * 1000),
+            endDate: new Date(rent.endDate * 1000),
+            owner: rent.owner,
+            tenant: rent.tenant,
+            price: rent.price.toNumber(),
+            state: rent.state
+          })
         }
+        setAllRents(allRentsArray)
       } catch (error) {
         console.log('getAllRents Error: ', error)
       }

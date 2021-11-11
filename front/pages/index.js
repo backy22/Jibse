@@ -49,7 +49,7 @@ export default function Home() {
               <Link href={`/room/${rent.contractId}`}>
                 <a>Room Detail</a>
               </Link>
-              <div className="self-center mt-8">
+              <div className="self-center mt-8 w-41">
                 <Button buttonText="Applied" disabled={true} />
               </div>
             </div>
@@ -71,12 +71,12 @@ export default function Home() {
                 <a>Room Detail</a>
               </Link>
               {isSameAddresses(rent.owner, value.account) && (
-                <div className="self-center mt-8">
+                <div className="self-center mt-8 w-41">
                   <Button buttonText="You are Owner" disabled={true} />
                 </div>
               )}
               {isSameAddresses(rent.tenant, value.account) && (
-                <div className="self-center mt-8">
+                <div className="self-center mt-8 w-41">
                   <Button buttonText="You are Tenant" disabled={true} />
                 </div>
               )}
@@ -98,7 +98,7 @@ export default function Home() {
               <Link href={`/room/${rent.contractId}`}>
                 <a>Room Detail</a>
               </Link>
-              <div className="self-center mt-8">
+              <div className="self-center mt-8 w-41">
                 <Button onClick={() => applyRent(rent.contractId)} buttonText="Apply" isLoading={applyingRent} />
               </div>
             </div>

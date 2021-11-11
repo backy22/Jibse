@@ -7,7 +7,7 @@ const Button = ({onClick, buttonText, type, isLoading, disabled}) => {
             onClick={onClick}
             type={type}
             disabled={disabled}
-            className={`w-40 text-green-300 border-green-300 rounded-md border-2 p-2 relative ${hoverAction} disabled:opacity-50`}
+            className={`w-full text-green-300 border-green-300 rounded-md border-2 p-2 relative ${hoverAction} disabled:opacity-50`}
         >
             {buttonText}
             {isLoading && (

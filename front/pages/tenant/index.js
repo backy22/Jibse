@@ -90,7 +90,7 @@ const TenantDashboard = () => {
                             <div className="flex items-center" key={rent.contractId}>
                                 <RoomComponent rent={rent} />
                                 {rent.state === RentState.Locked && (
-                                    <div>
+                                    <div className="w-41">
                                         <Button buttonText="Pay Deposit" onClick={() => payDeposit(rent)} isLoading={payingDeposit} />
                                     </div>
                                 )}
@@ -125,7 +125,7 @@ const TenantDashboard = () => {
                                 {bill.state === BillState.Paid ? (
                                     <div className="flex-auto">Paid</div>
                                 ) : (
-                                    <div className="flex-auto">
+                                    <div className="flex-auto w-41">
                                         <Button buttonText="Pay Now" onClick={() => payBill(bill)} />
                                     </div>
                                 )}

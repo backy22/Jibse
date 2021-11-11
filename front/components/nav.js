@@ -31,7 +31,7 @@ const Nav = ({ account, connectWalletAction, connectingWallet }) => {
           </div>
         </div>
       : (
-        <div>
+        <div className="w-41">
           <Button onClick={connectWalletAction} buttonText="Connect" isLoading={connectingWallet} />
         </div>
       )}

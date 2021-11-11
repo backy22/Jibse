@@ -198,12 +198,12 @@ const Room = () => {
                                 </div>
                                 <div>{rentDetail.price} eth/month</div>
                                 {isTenant && (
-                                    <div className="mt-6">
+                                    <div className="mt-6 w-40">
                                         <Button buttonText="Review this room" onClick={openModal} />
                                     </div>
                                 )}
                                 {isOwner && (
-                                    <div className="mt-6">
+                                    <div className="mt-6 w-40">
                                         <Button buttonText="Create bill" onClick={createBill} />
                                     </div>
                                 )}
@@ -212,14 +212,14 @@ const Room = () => {
                         {isOwner && applicants.length > 0 && (
                             <>
                                 <h4>Applicants</h4>
-                                <div className="flex flex-col bg-gray-purple p-2 rounded">
-                                    {applicants.map((applicant) => (
-                                        <div className="flex justify-between" key={applicant}>
-                                            <div>{applicant}</div>
+                                {applicants.map((applicant) => (
+                                    <div className="flex  bg-gray-purple p-2 rounded justify-between" key={applicant}>
+                                        <div>{applicant}</div>
+                                        <div className="w-40">
                                             <Button buttonText="Accept" onClick={() => acceptApplicant(applicant)}/>
                                         </div>
-                                    ))}
-                                </div>
+                                    </div>
+                                ))}
                             </>
                         )}
                         {bills.length > 0 && (
@@ -269,7 +269,7 @@ const Room = () => {
                             <textarea className="border-2 w-full h-28 p-2 bg-light-purple" placeholder="Write your review" {...register("review", { required: true })} />
                             {errors.exampleRequired && <span>This field is required</span>}
                         </div>
-                        <div className="mx-auto">
+                        <div className="mx-auto w-40">
                             <Button type="submit" buttonText="Save" isLoading={reviewing} />
                         </div>
                     </form>
