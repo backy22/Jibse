@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import Button from '../../components/button';
-import AuthWrapper, { AuthContext } from "../../components/auth-wrapper";
+import { AuthContext } from "../../components/auth-wrapper";
 
 const Admin = () => {
     const value = useContext(AuthContext);
@@ -33,17 +33,25 @@ const Admin = () => {
     }, [value.rentContract])
 
     async function calculateTenantScore(address) {
-        console.log('onclick', address)
         try {
             const calculateTxn = await value.scoreContract.calculateTenantScore(address, { gasLimit: 1000000 })
             console.log('calculateTxn', calculateTxn)
         } catch (error) {
-            console.log('Get reviews Error: ', error)
+            console.log('Calculate Tenant Score Error: ', error)
+        }
+    }
+
+    async function calculateOwnerScore(address) {
+        try {
+            const calculateTxn = await value.scoreContract.calculateOwnerScore(address, { gasLimit: 1000000 })
+            console.log('calculateTxn', calculateTxn)
+        } catch (error) {
+            console.log('Calculate Owner Score Error: ', error)
         }
     }
 
     return (
-        <AuthWrapper>
+        <div>
             <section className="max-w-6xl mx-auto">
                 <h1 className="text-center mb-12">Admin</h1>
                 {allTenants.length > 0 && allTenants.map((address) => (
@@ -59,13 +67,13 @@ const Admin = () => {
                     <div className="flex bg-gray-purple p-2 rounded justify-between" key={address}>
                         <div>{address}</div>
                         <div className="w-64">
-                            <Button onClick={() => calculateTenantScore(address)} buttonText="Calculate Owner Score"/>
+                            <Button onClick={() => calculateOwnerScore(address)} buttonText="Calculate Owner Score"/>
                         </div>
                     </div>
                 ))}
                 
             </section>
-        </AuthWrapper>
+        </div>
     )
 }
 

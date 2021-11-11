@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useRouter } from 'next/router'
-import AuthWrapper, { AuthContext } from "../../components/auth-wrapper";
+import { AuthContext } from "../../components/auth-wrapper";
 
 const User = () => {
     const value = useContext(AuthContext);
@@ -23,7 +23,7 @@ const User = () => {
     }, [address, value.scoreContract])
 
     return (
-        <AuthWrapper>
+        <div>
             <section className="max-w-6xl mx-auto">
                 <h1 className="text-center mb-12">{address}</h1>
                 <div>
@@ -31,7 +31,7 @@ const User = () => {
                     <div>Contact: 647-123-5678</div>
                 </div>
             </section>
-        </AuthWrapper>
+        </div>
     )
 }
 

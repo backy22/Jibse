@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import Button from '../../components/button'
 import Modal from '../../components/modal'
 import RoomComponent from '../../components/room-component';
-import AuthWrapper, { AuthContext } from "../../components/auth-wrapper";
+import { AuthContext } from "../../components/auth-wrapper";
 import { isSameAddresses } from "../../utils/is-same-addresses";
 
 const OwnerDashboard = () => {
@@ -40,12 +40,13 @@ const OwnerDashboard = () => {
     }
 
     useEffect(() => {
+        console.log('myret---', value, value.myRents)
         const filteredMyRent = value.myRents.filter((rent) => isSameAddresses(rent.owner, value.account))
         setMyRooms(filteredMyRent);
     }, [value.account, value.myRents])
 
     return (
-        <AuthWrapper>
+        <div>
             <section className="max-w-6xl mx-auto">
                 <h1 className="text-center mb-12">Owner Dashboard</h1>
                 <div className="mb-6 w-40">
@@ -113,7 +114,7 @@ const OwnerDashboard = () => {
                     </form>
                 </Modal>
             </section>
-        </AuthWrapper>
+        </div>
     )
 }
 

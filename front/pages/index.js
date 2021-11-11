@@ -1,15 +1,14 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Link from 'next/link'
 import Moment from 'react-moment';
 import Button from '../components/button'
 import { shortenAddress } from '../utils/shorten-address';
 import Graph from '../components/graph'
-import AuthWrapper, { AuthContext } from '../components/auth-wrapper';
+import { AuthContext } from '../components/auth-wrapper';
 import { isSameAddresses } from '../utils/is-same-addresses';
 
 export default function Home() {
   const value = useContext(AuthContext);
-  console.log('vlaue--', value)
   const [applyingRent, setApplyingRent] = useState(false);
 
   const applyRent = async(contractId) => {
@@ -26,14 +25,14 @@ export default function Home() {
   }
 
   return (
-    <AuthWrapper>
+    <div>
       <section className="max-w-6xl mx-auto">
         <h1 className="text-center mb-12">
           Rooms in Toronto
         </h1>
 
         <div className="grid grid-cols-3 gap-4">
-          {value.appliedRents?.length > 0 && value.appliedRents.map((rent) => (
+          {value?.appliedRents?.length > 0 && value.appliedRents.map((rent) => (
             <div className="bg-gray-purple p-4 rounded flex flex-col" key={rent.contractId}>
               <Graph />
               <div>{rent.location}</div>
@@ -54,7 +53,7 @@ export default function Home() {
               </div>
             </div>
           ))}
-          {value.myRents?.length > 0 && value.myRents.map((rent) => (
+          {value?.myRents?.length > 0 && value.myRents.map((rent) => (
             <div className="bg-gray-purple p-4 rounded flex flex-col" key={rent.contractId}>
               <Graph />
               <div>{rent.location}</div>
@@ -82,7 +81,7 @@ export default function Home() {
               )}
             </div>
           ))}
-          {value.activeRents?.length > 0 && value.activeRents.map((rent) => (
+          {value?.activeRents?.length > 0 && value.activeRents.map((rent) => (
             <div className="bg-gray-purple p-4 rounded flex flex-col" key={rent.contractId}>
               <Graph />
               <div>{rent.location}</div>
@@ -105,6 +104,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-    </AuthWrapper>
+    </div>
   )
 }

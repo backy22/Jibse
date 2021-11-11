@@ -5,7 +5,7 @@ import Button from '../../components/button';
 import { ethers } from 'ethers';
 import { RentState, BillState } from "../../utils/enum";
 import Moment from 'react-moment';
-import AuthWrapper, { AuthContext } from "../../components/auth-wrapper";
+import { AuthContext } from "../../components/auth-wrapper";
 import { isSameAddresses } from "../../utils/is-same-addresses";
 
 const TenantDashboard = () => {
@@ -76,7 +76,7 @@ const TenantDashboard = () => {
     }
 
     return (
-        <AuthWrapper>
+        <div>
             <section className="max-w-6xl mx-auto">
                 <h1 className="text-center mb-12">Tenant Dashboard</h1>
                 <div className="mb-8">
@@ -144,7 +144,7 @@ const TenantDashboard = () => {
                     </>
                 )}
             </section>
-        </AuthWrapper>
+        </div>
     )
 }
 

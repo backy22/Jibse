@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import StarRatings from 'react-star-ratings';
 import { shortenAddress } from '../../utils/shorten-address';
 import Graph from '../../components/graph';
-import AuthWrapper, { AuthContext } from '../../components/auth-wrapper'
+import { AuthContext } from '../../components/auth-wrapper'
 import { isSameAddresses } from '../../utils/is-same-addresses';
 
 const Room = () => {
@@ -170,7 +170,7 @@ const Room = () => {
     }
 
     return (
-        <AuthWrapper>
+        <div>
             <section className="max-w-6xl mx-auto">
                 <h1 className="text-center mb-12">Room Dashboard</h1>
                 {rentDetail && (
@@ -275,7 +275,7 @@ const Room = () => {
                     </form>
                 </Modal>
             </section>
-        </AuthWrapper>
+        </div>
     )
 }
 

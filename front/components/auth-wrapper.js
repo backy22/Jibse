@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, createContext } from 'react'
 import Nav from '../components/nav'
 import { ethers } from 'ethers';
 import rent from '../abi/Rent.json'
@@ -19,7 +19,7 @@ const defaultContext = {
     activeRents: []
 }
 
-export const AuthContext = React.createContext(defaultContext)
+export const AuthContext = createContext(defaultContext)
 
 const AuthWrapper = ({ children }) => {
     const [account, setAccount] = useState(null);
@@ -171,6 +171,7 @@ const AuthWrapper = ({ children }) => {
   useEffect(() => {
     const filteredMyRents = allRents.filter((rent) => isSameAddresses(account, rent.tenant) || isSameAddresses(account, rent.owner))
     setMyRents(filteredMyRents)
+    console.log('myrent----', filteredMyRents);
     defaultContext.myRents = filteredMyRents;
 
     const getAppliedRents = async() => {
@@ -223,7 +224,7 @@ const AuthWrapper = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={account, rentContract, scoreContract, paymentContract, myRents, appliedRents, activeRents} >
+    <AuthContext.Provider value={{account, rentContract, scoreContract, paymentContract, myRents, appliedRents, activeRents}} >
         <Head>
             <title>Jibse</title>
             <meta name="description" content="Jibse" />
