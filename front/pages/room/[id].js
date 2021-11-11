@@ -26,7 +26,7 @@ const Room = () => {
     const [reviewing, setReviwing] = useState(false)
     const [bills, setBills] = useState([])
 
-    const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors } } = useForm();
 
     const changeRating = (newRating) => {
         setRating(newRating)
@@ -107,7 +107,7 @@ const Room = () => {
                         billingDate: new Date(bill.billingDate * 1000),
                         payee: bill.payee,
                         payer: bill.payer,
-                        state: bill,state
+                        state: bill.state
                     })
                 }
                 console.log('billsArray', billsArray)

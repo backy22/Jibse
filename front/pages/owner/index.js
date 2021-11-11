@@ -14,7 +14,7 @@ const OwnerDashboard = () => {
     const [creatingRoom, setCreatingRoom] = useState(false)
     const [myRooms, setMyRooms] = useState([])
 
-    const { control, register, handleSubmit, watch, formState: { errors } } = useForm();
+    const { control, register, handleSubmit, formState: { errors } } = useForm();
 
     const onSubmit = async(values) => {
         try {

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import Button from '../../components/button'
+import Button from '../../components/button';
 import AuthWrapper, { AuthContext } from "../../components/auth-wrapper";
 
 const Admin = () => {
@@ -47,7 +47,7 @@ const Admin = () => {
             <section className="max-w-6xl mx-auto">
                 <h1 className="text-center mb-12">Admin</h1>
                 {allTenants.length > 0 && allTenants.map((address) => (
-                    <div className="flex bg-gray-purple p-2 rounded">
+                    <div className="flex bg-gray-purple p-2 rounded" key={address}>
                         <div>{address}</div>
                         <div className="w-96">
                             <Button onClick={() => calculateTenantScore(address)} buttonText="Calculate Tenant Score"/>
@@ -56,7 +56,7 @@ const Admin = () => {
                 ))}
 
                 {allOwners.length > 0 && allOwners.map((address) => (
-                    <div className="flex bg-gray-purple p-2 rounded justify-between">
+                    <div className="flex bg-gray-purple p-2 rounded justify-between" key={address}>
                         <div>{address}</div>
                         <div className="w-64">
                             <Button onClick={() => calculateTenantScore(address)} buttonText="Calculate Owner Score"/>
