@@ -6,6 +6,7 @@ import { ethers } from 'ethers';
 import { RentState, BillState } from "../../utils/enum";
 import Moment from 'react-moment';
 import AuthWrapper, { AuthContext } from "../../components/auth-wrapper";
+import { isSameAddresses } from "../../utils/is-same-addresses";
 
 const TenantDashboard = () => {
     const value = useContext(AuthContext);
@@ -24,7 +25,7 @@ const TenantDashboard = () => {
             }
         }
 
-        const filteredMyRent = value.myRents.filter((rent) => rent.tenant.toLowerCase() === value.account)
+        const filteredMyRent = value.myRents.filter((rent) => isSameAddresses(rent.tenant, value.account))
         setMyRentsAsTenant(filteredMyRent)
 
         const getBills = async() => {
@@ -136,7 +137,9 @@ const TenantDashboard = () => {
                     <>
                         <h4>Applied Rent</h4>
                         {value.appliedRents.map((rent) => (
-                            <RoomComponent rent={rent} />
+                            <div key={rent.contractId}>
+                                <RoomComponent rent={rent} />
+                            </div>
                         ))}
                     </>
                 )}

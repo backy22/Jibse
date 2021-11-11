@@ -5,9 +5,11 @@ import Button from '../components/button'
 import { shortenAddress } from '../utils/shorten-address';
 import Graph from '../components/graph'
 import AuthWrapper, { AuthContext } from '../components/auth-wrapper';
+import { isSameAddresses } from '../utils/is-same-addresses';
 
 export default function Home() {
   const value = useContext(AuthContext);
+  console.log('vlaue--', value)
   const [applyingRent, setApplyingRent] = useState(false);
 
   const applyRent = async(contractId) => {
@@ -68,12 +70,12 @@ export default function Home() {
               <Link href={`/room/${rent.contractId}`}>
                 <a>Room Detail</a>
               </Link>
-              {rent.owner.toLowerCase() === value.account && (
+              {isSameAddresses(rent.owner, value.account) && (
                 <div className="self-center mt-8">
                   <Button buttonText="You are Owner" disabled={true} />
                 </div>
               )}
-              {rent.tenant.toLowerCase() === value.account && (
+              {isSameAddresses(rent.tenant, value.account) && (
                 <div className="self-center mt-8">
                   <Button buttonText="You are Tenant" disabled={true} />
                 </div>

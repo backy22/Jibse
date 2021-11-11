@@ -6,6 +6,7 @@ import Button from '../../components/button'
 import Modal from '../../components/modal'
 import RoomComponent from '../../components/room-component';
 import AuthWrapper, { AuthContext } from "../../components/auth-wrapper";
+import { isSameAddresses } from "../../utils/is-same-addresses";
 
 const OwnerDashboard = () => {
     const value = useContext(AuthContext);
@@ -39,7 +40,7 @@ const OwnerDashboard = () => {
     }
 
     useEffect(() => {
-        const filteredMyRent = value.myRents.filter((rent) => rent.owner.toLowerCase() == value.account)
+        const filteredMyRent = value.myRents.filter((rent) => isSameAddresses(rent.owner, value.account))
         setMyRooms(filteredMyRent);
     }, [value.account, value.myRents])
 

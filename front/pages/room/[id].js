@@ -9,6 +9,7 @@ import StarRatings from 'react-star-ratings';
 import { shortenAddress } from '../../utils/shorten-address';
 import Graph from '../../components/graph';
 import AuthWrapper, { AuthContext } from '../../components/auth-wrapper'
+import { isSameAddresses } from '../../utils/is-same-addresses';
 
 const Room = () => {
     const router = useRouter()
@@ -69,10 +70,10 @@ const Room = () => {
                     price: rentTxn.price.toNumber(),
                     state: rentTxn.state,
                 });
-                if (rentTxn.owner.toLowerCase() === value.account) {
+                if (isSameAddresses(rentTxn.owner, value.account)) {
                     setIsOwner(true)
                 }
-                if (rentTxn.tenant.toLowerCase() === value.account) {
+                if (isSameAddresses(rentTxn.tenant, value.account)) {
                     setIsTenant(true)
                 }
             } catch (error) {

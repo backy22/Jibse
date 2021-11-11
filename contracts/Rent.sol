@@ -10,6 +10,9 @@ contract Rent is IRent {
     mapping(address => uint[]) contractMap; // user address -> contract IDs
     mapping(uint => address[]) applicantMap; // contract Ids -> applicant addresses
     mapping(address => uint[]) applicantContractMap; // applicant address -> contract Ids
+
+    address[] allTenants;
+    address[] allOwners;
     
     // events
     event ContractCreated(uint indexed id);
@@ -24,6 +27,11 @@ contract Rent is IRent {
     
     modifier isTenant(uint contractId) {
         require(msg.sender == contracts[contractId].tenant, "Only tenant can call this function.");
+        _;
+    }
+
+    modifier isAdmin() {
+        require(msg.sender == 0x684367aa423f4c1446d99ae234E172AE1BA2842c, "Only admin user can call this function.");
         _;
     }
     
@@ -57,6 +65,18 @@ contract Rent is IRent {
             state: State.Active
         }));
         contractMap[msg.sender].push(id);
+
+        bool doesListContains = false;
+ 
+        for (uint i=0; i < allOwners.length; i++) {
+            if (allOwners[i] == msg.sender) {
+                doesListContains = true;
+            }
+        }
+
+        if (!doesListContains) {
+            allOwners.push(msg.sender);
+        }
         
         emit ContractCreated(id);
     }
@@ -125,20 +145,16 @@ contract Rent is IRent {
         return result;
     }
 
-    function getAppliedContracts(address _address)
+    function getAllContracts() external view returns (Contract[] memory) {
+        return contracts;
+    }
+
+    function getAppliedContractIds(address _address)
         external
         view
-        returns (Contract[] memory)
+        returns (uint[] memory)
     {
-        uint[] memory contractIds = applicantContractMap[_address];
-
-        Contract[] memory result = new Contract[](contractIds.length);
-
-        for(uint i=0; i<contractIds.length; i++) {
-            result[i] = getContractById(contractIds[i]);
-        }
-        
-        return result;
+        return applicantContractMap[_address];
     }
     
     function acceptApplicant(uint contractId, address _address) 
@@ -153,6 +169,18 @@ contract Rent is IRent {
         // TODO remove the contract from applicantContractMap
     
         contractMap[_address].push(contractId); // The tenant can see contract list in the tenant dashboard.
+
+        bool doesListContains = false;
+
+        for (uint i=0; i < allTenants.length; i++) {
+            if (allTenants[i] == _address) {
+                doesListContains = true;
+            }
+        }
+
+        if (!doesListContains) {
+            allTenants.push(_address);
+        }
 
         emit ContractLocked(contractId, _address);
     }
@@ -191,5 +219,13 @@ contract Rent is IRent {
         
         emit DepositReceived(contractId, contracts[contractId].owner, msg.sender);
     }
-    
+
+    function getAllTenantsAddress() external isAdmin() view returns (address[] memory) {
+        return allTenants;
+    }
+
+    function getAllOwnersAddress() external isAdmin() view returns (address[] memory) {
+        return allOwners;
+    }
+
 }

@@ -12,19 +12,28 @@ const main = async () => {
   // const addContract = await rentContract.addContract(1000,2000,'Toronto',1)
   // addContract.wait();
 
+  // const getAllContracts = await rentContract.getAllContracts();
+  // console.log('getAllContracts', getAllContracts);
+
   // const activeRents = await rentContract.getContractsByState(0);
   // console.log('activeRents', activeRents);
 
-  //const applyContract = await rentContract.connect(tenant).applyForContract(0);
+  // const applyContract = await rentContract.connect(tenant).applyForContract(0);
 
   // const applicants = await rentContract.getApplicants(0);
   // console.log('Applicants', applicants);
 
-  // const appliedContracts = await rentContract.getAppliedContracts(tenant.address);
-  // console.log('Applied contracts', appliedContracts);
+  // const appliedContractIds = await rentContract.getAppliedContractIds(tenant.address);
+  // console.log('Applied contract ids', appliedContractIds);
 
-  //const acceptContract = await rentContract.acceptApplicant(0, tenant.address);
+  // const acceptContract = await rentContract.acceptApplicant(0, tenant.address);
   // console.log('Accept', tenant.address);
+
+  // const allTenants = await rentContract.getAllTenantsAddress();
+  // console.log('allTenants', allTenants);
+
+  // const allOwners = await rentContract.getAllOwnersAddress();
+  // console.log('allOwners', allOwners);
 
   // const payDeposit = await rentContract.connect(tenant).payDeposit(0, { value: ethers.utils.parseEther('1.0') });
   // console.log('pay deposit', payDeposit);

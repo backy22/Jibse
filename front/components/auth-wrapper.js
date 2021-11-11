@@ -7,6 +7,7 @@ import score from '../abi/Score.json'
 import payment from '../abi/Payment.json'
 import { RENT_CONTRACT_ADDRESS,  SCORE_CONTRACT_ADDRESS, PAYMENT_CONTRACT_ADDRESS } from '../utils/constants'
 import { RentState } from '../utils/enum';
+import { isSameAddresses } from '../utils/is-same-addresses';
 
 const defaultContext = {
     account: null,
@@ -20,13 +21,14 @@ const defaultContext = {
 
 export const AuthContext = React.createContext(defaultContext)
 
-const AuthWrapper = ({children}) => {
-    const [currentAccount, setCurrentAccount] = useState(null);
+const AuthWrapper = ({ children }) => {
+    const [account, setAccount] = useState(null);
     const [connectingWallet, setConnectingWallet] = useState(false);
     const [rentContract, setRentContract] = useState(null);
-    const [, setScoreContract] = useState(null);
-    const [, setPaymentContract] = useState(null);
-    const [, setActiveRents] = useState([]);
+    const [scoreContract, setScoreContract] = useState(null);
+    const [paymentContract, setPaymentContract] = useState(null);
+    const [allRents, setAllRents] = useState([]);
+    const [activeRents, setActiveRents] = useState([]);
     const [myRents, setMyRents] = useState([]);
     const [appliedRents, setAppliedRents] = useState([])
 
@@ -45,10 +47,10 @@ const AuthWrapper = ({children}) => {
           const accounts = await ethereum.request({ method: 'eth_accounts' });
   
           if (accounts.length !== 0) {
-            const account = accounts[0];
-            console.log('Found an authorized account:', account);
-            setCurrentAccount(account);
-            defaultContext.account = account;
+            const act = accounts[0];
+            console.log('Found an authorized account:', act);
+            setAccount(act);
+            defaultContext.account = act;
           } else {
             console.log('No authorized account found');
           }
@@ -102,17 +104,17 @@ const AuthWrapper = ({children}) => {
     }
 
     getContracts();
-  }, [currentAccount])
+  }, [account])
 
-  // get myRents & get events
+  // get all rnets & get events
   useEffect(() => {
-    const getMyRents = async() => {
+    const getAllRents = async() => {
       try {
         if (rentContract) {
-          const myRentsTxn = await rentContract.getContractsByAddress(currentAccount)
-          let myRentArray = []
-          for(let rent of myRentsTxn) {
-            myRentArray.push({
+          const allRentsTxn = await rentContract.getAllContracts()
+          let allRentsArray = []
+          for(let rent of allRentsTxn) {
+            allRentsArray.push({
               contractId: rent.contractId.toNumber(),
               location: rent.location,
               startDate: new Date(rent.startDate * 1000),
@@ -123,35 +125,34 @@ const AuthWrapper = ({children}) => {
               state: rent.state
             })
           }
-          setMyRents(myRentArray)
-          defaultContext.myRents = myRentArray;
+          setAllRents(allRentsArray)
         }
       } catch (error) {
-        console.log('getMyRent Error: ', error)
+        console.log('getAllRents Error: ', error)
       }
     }
 
-    if (currentAccount && rentContract) {
-      getMyRents();
+    if (account && rentContract) {
+      getAllRents();
 
       const onContractCreated = async(id) => {
         console.log('contract created-----', id)
-        getMyRents();
+        getAllRents();
       }
 
       const onAppliedContract = async(id, applicant) => {
         console.log('applied contract----', id, applicant)
-        getMyRents();
+        getAllRents();
       }
 
       const onContractLocked = async(id, tenant) => {
         console.log('contract locked----', id, tenant)
-        getMyRents();
+        getAllRents();
       }
 
       const onDepositReceived = async(id, owner, tenant) => {
         console.log('deposit received-----', id, owner, tenant)
-        getMyRents();
+        getAllRents();
       }
 
       rentContract.on('ContractCreated', onContractCreated);
@@ -168,70 +169,39 @@ const AuthWrapper = ({children}) => {
     }
   }, [rentContract]);
 
-  // get applied rents
+  // get myRents & applied rents
   useEffect(() => {
+    const filteredMyRents = allRents.filter((rent) => isSameAddresses(account, rent.tenant) || isSameAddresses(account, rent.owner))
+    setMyRents(filteredMyRents)
+    defaultContext.myRents = filteredMyRents;
+
     const getAppliedRents = async() => {
       try {
-          const appliedRentTxn = await rentContract.getAppliedContracts(currentAccount, { gasLimit: 1000000 })
-          const appliedRentArray = []
-          const myRentIds = myRents.map((rent) => rent.contractId)
-          for(let appliedRent of appliedRentTxn) {
-            if(!myRentIds.includes(appliedRent.contractId.toNumber())) {
-              appliedRentArray.push({
-                  contractId: appliedRent.contractId.toNumber(),
-                  location: appliedRent.location,
-                  startDate: new Date(appliedRent.startDate * 1000),
-                  endDate: new Date(appliedRent.endDate * 1000),
-                  owner: appliedRent.owner,
-                  tenant: appliedRent.tenant,
-                  price: appliedRent.price.toNumber(),
-                  state: appliedRent.state
-              })
-            }
-          }
-          setAppliedRents(appliedRentArray)
-          defaultContext.appliedRents = appliedRentArray;
+          const appliedRentIdsTxn = await rentContract.getAppliedContractIds(account, { gasLimit: 1000000 })
+          const appliedRentIdsArray = appliedRentIdsTxn.map((id) => id.toNumber())
+          const filteredAppliedRents = allRents.filter((rent) => appliedRentIdsArray.includes(rent.contractId))
+          setAppliedRents(filteredAppliedRents)
+          defaultContext.appliedRents = filteredAppliedRents
       } catch (error) {
           console.log('Get applied rents Error: ', error)
       }
     }
 
-    if (currentAccount && rentContract) {
+    if (account && rentContract) {
       getAppliedRents();
     }
-  }, [rentContract, myRents]);
+  }, [rentContract, allRents]);
 
   // get active rents
   useEffect(() => {
-    const getActiveRents = async() => {
-      try {
-        const activeRentsTxn = await rentContract.getContractsByState(RentState.Active)
-        let activeRentArray = []
-        let appliedRentContractIds = appliedRents.map((rent) => rent.contractId);
-        for(let rent of activeRentsTxn) {
-          if (!appliedRentContractIds.includes(rent.contractId.toNumber()) && rent.owner.toLowerCase() !== currentAccount && rent.tenant.toLowerCase() !== currentAccount) {
-            activeRentArray.push({
-              contractId: rent.contractId.toNumber(),
-              location: rent.location,
-              startDate: new Date(rent.startDate * 1000),
-              endDate: new Date(rent.endDate * 1000),
-              owner: rent.owner,
-              price: rent.price.toNumber(),
-              state: rent.state
-            })
-          }
-        }
-        setActiveRents(activeRentArray)
-        defaultContext.activeRents = activeRentArray
-      } catch (error) {
-        console.log('getActiveRent Error: ', error)
-      }
-    }  
-
-    if (currentAccount && rentContract) {
-      getActiveRents();
-    }
-  }, [rentContract, appliedRents])
+    const appliedRentIds = appliedRents.map((rent) => rent.contractId)
+    const filteredActiveRents = allRents.filter((rent) => rent.state === RentState.Active &&
+                                                          !appliedRentIds.includes(rent.contractId) &&
+                                                          !isSameAddresses(rent.owner, account) &&
+                                                          !isSameAddresses(rent.tenant, account))
+    setActiveRents(filteredActiveRents)
+    defaultContext.activeRents = filteredActiveRents
+  }, [rentContract, allRents, appliedRents])
 
   const connectWalletAction = async () => {
     try {
@@ -248,24 +218,24 @@ const AuthWrapper = ({children}) => {
       });
 
       console.log('Connected', accounts[0]);
-      setCurrentAccount(accounts[0]);
+      setAccount(accounts[0]);
     } catch (error) {
       console.log(error);
     }
   };
 
   return (
-    <div>
+    <AuthContext.Provider value={account, rentContract, scoreContract, paymentContract, myRents, appliedRents, activeRents} >
         <Head>
             <title>Jibse</title>
             <meta name="description" content="Jibse" />
             <link rel="icon" href="/favicon.ico" />
         </Head>
 
-        <Nav currentAccount={currentAccount} connectWalletAction={connectWalletAction} connectingWallet={connectingWallet} />
+        <Nav account={account} connectWalletAction={connectWalletAction} connectingWallet={connectingWallet} />
 
         {children}
-    </div>
+    </AuthContext.Provider>
   )
 }
 
