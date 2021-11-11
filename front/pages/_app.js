@@ -1,5 +1,5 @@
-import AuthWrapper from '../components/auth-wrapper';
 import '../styles/globals.scss'
+import AuthWrapper from '../components/auth-wrapper';
 
 function MyApp({ Component, pageProps }) {
   return (
