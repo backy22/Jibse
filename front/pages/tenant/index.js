@@ -63,10 +63,11 @@ const TenantDashboard = () => {
   async function payDeposit(rent) {
     try {
       setPayingDeposit(true);
+      let wei = ethers.utils.parseEther(price.toString()) // convert to wei
       const payDepositTxn = await value.rentContract.payDeposit(
         rent.contractId,
         {
-          value: ethers.utils.parseEther((rent.price / 1000).toString()),
+          value: wei.toString(),
           gasLimit: 1000000,
         }
       );

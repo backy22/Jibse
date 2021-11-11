@@ -41,7 +41,7 @@ run front (under front directory)
 npm run dev
 ```
 
-# live
+# Live
 https://jibse.vercel.app/
 
 # Future plan
@@ -50,6 +50,6 @@ https://jibse.vercel.app/
 - Introduce more robust score system
 - Introducing bidding system
 
-# member
+# Member
 @backy22
 @sera0731
