@@ -57,7 +57,9 @@ const TenantDashboard = () => {
     async function payDeposit(rent) {
         try {
             setPayingDeposit(true)
-            const payDepositTxn = await value.rentContract.payDeposit(rent.contractId, { value: ethers.utils.parseEther((rent.price/1000).toString()), gasLimit: 1000000 })
+            let wei = ethers.utils.parseEther(price.toString()) // convert to wek
+            const payDepositTxn = await value.rentContract.payDeposit(rent.contractId, { value: wei.toString(), gasLimit: 1000000 })
+            //const payDepositTxn = await value.rentContract.payDeposit(rent.contractId, { value: ethers.utils.parseEther((rent.price/1000).toString()), gasLimit: 1000000 })
             console.log('payDepositTxn', payDepositTxn)
         } catch (error) {
             console.log('Pay deposit Error: ', error)

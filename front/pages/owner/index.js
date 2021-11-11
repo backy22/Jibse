@@ -7,6 +7,7 @@ import Modal from '../../components/modal'
 import RoomComponent from '../../components/room-component';
 import { AuthContext } from "../../components/auth-wrapper";
 import { isSameAddresses } from "../../utils/is-same-addresses";
+import { ethers } from 'ethers';
 
 const OwnerDashboard = () => {
     const value = useContext(AuthContext);
@@ -19,11 +20,12 @@ const OwnerDashboard = () => {
     const onSubmit = async(values) => {
         try {
             setCreatingRoom(true)
+            let wei = ethers.utils.parseEther(values.price.toString()) // convert to wei
             const addContract = await value.rentContract.addContract(
                 new Date(values.startDate).getTime()/1000,
                 new Date(values.endDate).getTime()/1000,
                 values.location,
-                values.price
+                wei.toString() // convert to wei
             )
             addContract.wait();
             console.log('addContract', addContract);
@@ -40,7 +42,6 @@ const OwnerDashboard = () => {
     }
 
     useEffect(() => {
-        console.log('myret---', value, value.myRents)
         const filteredMyRent = value.myRents.filter((rent) => isSameAddresses(rent.owner, value.account))
         setMyRooms(filteredMyRent);
     }, [value.account, value.myRents])
@@ -105,7 +106,7 @@ const OwnerDashboard = () => {
                             </div>
                         </div>
                         <div className="m-2">
-                            <input className="border-2 p-2 w-full bg-light-purple" placeholder="Price" {...register("price", { required: true })} />
+                            <input className="border-2 p-2 w-full bg-light-purple" placeholder="Price" {...register("price", { required: true })} /> eth/month
                             {errors.exampleRequired && <span>This field is required</span>}
                         </div>
                         <div className="mt-12 self-center w-41">

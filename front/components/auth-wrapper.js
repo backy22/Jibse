@@ -113,6 +113,12 @@ const AuthWrapper = ({ children }) => {
         const allRentsTxn = await rentContract.getAllContracts()
         let allRentsArray = []
         for(let rent of allRentsTxn) {
+          let price = rent.price.toNumber();
+          console.log('price', price);
+          let wei = ethers.BigNumber.from(price.toString());
+          let ethPrice = ethers.utils.formatEther(wei);
+          //ethers.utils.formatEther(wei), // wei to eth
+          console.log('wei', wei, ethPrice)
           allRentsArray.push({
             contractId: rent.contractId.toNumber(),
             location: rent.location,
@@ -120,7 +126,7 @@ const AuthWrapper = ({ children }) => {
             endDate: new Date(rent.endDate * 1000),
             owner: rent.owner,
             tenant: rent.tenant,
-            price: rent.price.toNumber(),
+            price: price,
             state: rent.state
           })
         }
@@ -171,7 +177,6 @@ const AuthWrapper = ({ children }) => {
   useEffect(() => {
     const filteredMyRents = allRents.filter((rent) => isSameAddresses(account, rent.tenant) || isSameAddresses(account, rent.owner))
     setMyRents(filteredMyRents)
-    console.log('myrent----', filteredMyRents);
     defaultContext.myRents = filteredMyRents;
 
     const getAppliedRents = async() => {
