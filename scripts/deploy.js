@@ -1,12 +1,12 @@
 const main = async () => {
   const [owner] = await hre.ethers.getSigners();
   // Rent Contract
-  const rentContractFactory = await hre.ethers.getContractFactory('Rent');
-  const rentContract = await rentContractFactory.deploy();
-  await rentContract.deployed();
+  // const rentContractFactory = await hre.ethers.getContractFactory('Rent');
+  // const rentContract = await rentContractFactory.deploy();
+  // await rentContract.deployed();
 
-  console.log('Rent Contract deployed to:', rentContract.address);
-  console.log('Rent Contract deployed by:', owner.address);
+  // console.log('Rent Contract deployed to:', rentContract.address);
+  // console.log('Rent Contract deployed by:', owner.address);
 
   // Payment Contract
   // const paymentContractFactory = await hre.ethers.getContractFactory('Payment');
