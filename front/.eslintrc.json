@@ -1,6 +1,5 @@
 {
   "extends": [
-    "next/babel",
     "eslint:recommended",
     "plugin:prettier/recommended",
     "plugin:react-hooks/recommended",
