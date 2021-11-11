@@ -1,15 +1,12 @@
 import Link from "next/link";
 import Moment from "react-moment";
 import { shortenAddress } from "../utils/shorten-address";
+import { isEmptyAddress } from "../utils/address"; 
 
 const RoomComponent = ({ rent, children, showTenent = true }) => {
   if (!rent) {
     return;
   }
-
-  const isTenantExist = (tenant) => {
-    return tenant && tenant !== "0x0000000000000000000000000000000000000000";
-  };
 
   return (
     <div className="bg-gray-purple p-5 rounded flex flex-col border-solid border-4 border-opacity-50">
@@ -35,7 +32,7 @@ const RoomComponent = ({ rent, children, showTenent = true }) => {
             <a className="underline">{shortenAddress(rent.owner)}</a>
           </Link>
         </div>
-        {showTenent && isTenantExist(rent.tenant) && (
+        {showTenent && isEmptyAddress(rent.tenant) && (
           <div>
             <span>Tenant: </span>
             <Link href={`/user/${rent.tenant}`}>
