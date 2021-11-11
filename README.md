@@ -18,9 +18,9 @@ We are from outside of Canada and have struggled to find a good place because
 # Structure
 ## SmartContract
 Built on Ethereum smart contract.
--Rent Contract ... manage all rent contract. 
--Payment Contract ... manage payment
--Score Contract ... have score logic for each user. manage all score and review.
+- Rent Contract ... manage all rent contract. 
+- Payment Contract ... manage payment
+- Score Contract ... have score logic for each user. manage all score and review.
 
 ## Frontend
 React, NextJs
