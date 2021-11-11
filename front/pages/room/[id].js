@@ -204,7 +204,7 @@ const Room = () => {
                                   <div>
                                     <span>Tenant: </span>
                                     <Link href={`/user/${rentDetail.tenant}`}>
-                                      <a className="underline">{rent.tenant}</a>
+                                      <a className="underline">{rentDetail.tenant}</a>
                                     </Link>
                                   </div>
                                 )}

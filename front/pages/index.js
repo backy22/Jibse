@@ -1,6 +1,4 @@
 import React, { useContext, useState } from 'react'
-import Link from 'next/link'
-import Moment from 'react-moment';
 
 import Button from '../components/button';
 import RoomComponent from '../components/room-component';
@@ -32,14 +30,14 @@ export default function Home() {
         </h1>
         <div className="grid grid-cols-3 gap-4 font-mono">
           {value?.appliedRents?.length > 0 && value.appliedRents.map((rent) => (
-            <RoomComponent rent={rent} showTenent={false}>
+            <RoomComponent rent={rent} showTenent={false} key={rent.contractId}>
               <div className="self-center mt-8 w-auto">
                 <Button buttonText="Applied" disabled={true} />
               </div>
             </RoomComponent>
           ))}
           {value?.myRents?.length > 0 && value.myRents.map((rent) => (
-            <RoomComponent rent={rent}>
+            <RoomComponent rent={rent} key={rent.contractId}>
             {isSameAddresses(rent.owner, value.account) && (
               <div className="self-center mt-8 w-41">
                 <Button buttonText="You are the owner" disabled={true} />
@@ -53,7 +51,7 @@ export default function Home() {
             </RoomComponent>
           ))}
           {value?.activeRents?.length > 0 && value.activeRents.map((rent) => (
-            <RoomComponent rent={rent}>
+            <RoomComponent rent={rent} key={rent.contractId}>
               <div className="self-center my-8 w-full">
                   <Button onClick={() => applyRent(rent.contractId)} buttonText="Apply" isLoading={applyingRent} />
               </div>
