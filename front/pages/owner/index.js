@@ -56,7 +56,7 @@ const OwnerDashboard = () => {
   return (
     <div>
       <section className="max-w-6xl mx-auto">
-        <h1 className="text-center my-20 font-black gradient-pink-green font-sans text-6xl">
+        <h1 className="text-center my-12 font-black gradient-pink-green font-sans text-6xl">
           Owner Dashboard
         </h1>
         <div className="p-12">
@@ -79,7 +79,7 @@ const OwnerDashboard = () => {
         <Modal isOpen={isOpen} setIsOpen={setIsOpen} label="Create a Room">
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="text-gray-100 flex flex-col h-5/6"
+            className="text-gray-100 flex flex-col h-full"
           >
             <div className="m-2">
               <input
@@ -133,7 +133,7 @@ const OwnerDashboard = () => {
               />
               {errors.exampleRequired && <span>This field is required</span>}
             </div>
-            <div className="mt-12 self-center w-41">
+            <div className="mt-12 self-center mx-auto w-40">
               <Button type="submit" buttonText="Save" />
             </div>
           </form>

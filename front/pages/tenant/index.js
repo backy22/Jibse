@@ -32,6 +32,15 @@ const TenantDashboard = () => {
     );
     setMyRentsAsTenant(filteredRents);
 
+    const isAutoPaymentSetup = async (address) => {
+      try {
+        const isAutoPaymentSetupTxn = await value.paymentContract.isAutoPaymentSetup(address)
+        return isAutoPaymentSetupTxn
+      } catch (error) {
+        console.log("Get isAutoPaymentSetup: ", error);
+      }
+    }
+
     const getBills = async () => {
       try {
         const getBillsTxn = await value.paymentContract.getBillsByAddress(
@@ -42,11 +51,12 @@ const TenantDashboard = () => {
           billsArray.push({
             id: bill.billId.toNumber(),
             contractId: bill.contractId.toNumber(),
-            price: bill.price.toNumber(),
+            price: ethers.utils.formatEther(bill.price),
             billingDate: new Date(bill.billingDate * 1000),
             payee: bill.payee,
             payer: bill.payer,
             state: bill.state,
+            isAuto: await isAutoPaymentSetup(bill.payee)
           });
         }
         setBills(billsArray);
@@ -81,8 +91,9 @@ const TenantDashboard = () => {
 
   async function payBill(bill) {
     try {
+      let wei = ethers.utils.parseEther(bill.price.toString())
       const payBillTxn = await value.paymentContract.payBill(bill.id, {
-        value: ethers.utils.parseEther((bill.price / 1000).toString()),
+        value: wei.toString(),
         gasLimit: 1000000,
       });
       console.log("payBillTxn", payBillTxn);
@@ -91,39 +102,43 @@ const TenantDashboard = () => {
     }
   }
 
+  async function setAutoPayment(bill) {
+    try {
+      const setAutoPaymentTxn = await value.paymentContract.setAutoPayment(bill.payee, true, {
+        gasLimit: 1000000,
+      });
+      console.log("setAutoPaymentTxn", setAutoPaymentTxn);
+    } catch (error) {
+      console.log("Set Auto Payment Error: ", error);
+    }
+  }
+
   return (
     <div>
       <section className="max-w-6xl mx-auto">
-        <h1 className="text-center my-20 font-black gradient-pink-green font-sans text-6xl">
+        <h1 className="text-center my-12 font-black gradient-pink-green font-sans text-6xl">
           Tenant Dashboard
         </h1>
         <div className="p-12">
-          <div className="mb-8">
+          <div className="my-4">
             <div>Score: {score}</div>
             <div>Contact: 647-123-5678</div>
           </div>
           {myRentsAsTenant.length > 0 && (
-            <>
+            <div className="my-4">
               <h4>Current Rent</h4>
               {myRentsAsTenant.map((rent) => (
                 <div className="flex items-center" key={rent.contractId}>
                   <RoomComponent rent={rent} />
                 </div>
               ))}
-            </>
+            </div>
           )}
           {bills.length > 0 && (
-            <>
+            <div className="my-4">
               <h4>My bills</h4>
-              <div className="flex bg-gray-purple p-2 rounded">
-                <div className="flex-auto">Payee Address</div>
-                <div className="flex-auto">Contract Id</div>
-                <div className="flex-auto">Billing date</div>
-                <div className="flex-auto">Price</div>
-                <div className="flex-auto">Action</div>
-              </div>
               {bills.map((bill) => (
-                <div className="flex bg-gray-purple p-2 rounded" key={bill.id}>
+                <div className="flex bg-gray-purple p-2 rounded items-center" key={bill.id}>
                   <div className="flex-auto">
                     <Link href={`/user/${bill.payee}`}>
                       <a>{bill.payee}</a>
@@ -143,19 +158,29 @@ const TenantDashboard = () => {
                   {bill.state === BillState.Paid ? (
                     <div className="flex-auto">Paid</div>
                   ) : (
-                    <div className="flex-auto w-41">
-                      <Button
-                        buttonText="Pay Now"
-                        onClick={() => payBill(bill)}
-                      />
-                    </div>
+                    <>
+                      <div className="flex-auto w-41">
+                        <Button
+                          buttonText="Pay Now"
+                          onClick={() => payBill(bill)}
+                        />
+                      </div>
+                      {!bill.isAuto && (
+                        <div className="flex-auto w-41 ml-2">
+                          <Button
+                            buttonText="Set Auto Payment"
+                            onClick={() => setAutoPayment(bill)}
+                          />
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               ))}
-            </>
+            </div>
           )}
           {value.appliedRents.length > 0 && (
-            <>
+            <div className="my-4">
               <h4>Applied Rent</h4>
               {value.appliedRents.map((rent) => (
                 <div key={rent.contractId}>
@@ -171,7 +196,7 @@ const TenantDashboard = () => {
                   )}
                 </div>
               ))}
-            </>
+            </div>
           )}
         </div>
       </section>

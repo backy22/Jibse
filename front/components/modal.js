@@ -9,7 +9,8 @@ const customStyles = {
       marginRight: '-50%',
       transform: 'translate(-50%, -50%)',
       width: '60vw',
-      background: '#3c2163'
+      background: '#3c2163',
+      height: '50vh'
     },
     overlay: {
         background: 'rgba(24,24,24,0.7)'

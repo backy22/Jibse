@@ -11,6 +11,7 @@ import { AuthContext } from '../../components/auth-wrapper'
 import { isSameAddresses } from '../../utils/is-same-addresses';
 import { isEmptyAddress } from "../../utils/address"; 
 import { ethers } from 'ethers';
+import { RentState, BillState } from '../../utils/enum';
 
 const Room = () => {
     const router = useRouter()
@@ -99,10 +100,11 @@ const Room = () => {
         const getBills = async() => {
             try {
                 const billsTxn = await value.paymentContract.getBillsByContractId(contractId, { gasLimit: 1000000 })
+                console.log('billsTxn', billsTxn)
                 const billsArray = []
                 for(let bill of billsTxn) {
                     billsArray.push({
-                        billId: bill.id.toNumber(),
+                        billId: bill.billId.toNumber(),
                         contractId: bill.contractId.toNumber(),
                         billingDate: new Date(bill.billingDate * 1000),
                         payee: bill.payee,
@@ -213,7 +215,7 @@ const Room = () => {
                                         <Button buttonText="Review this room" onClick={openModal} />
                                     </div>
                                 )}
-                                {isOwner && (
+                                {isOwner && rentDetail.state === RentState.Succeeded && (
                                     <div className="mt-6 w-40">
                                         <Button buttonText="Create a bill" onClick={createBill} />
                                     </div>
@@ -236,6 +238,12 @@ const Room = () => {
                         {bills.length > 0 && (
                             <>
                                 <h4>Payment History</h4>
+                                {bills.map((bill) => (
+                                    <div className="flex  bg-gray-purple p-2 m-2 rounded justify-between items-center" key={bill.billId}>
+                                        <div>{bill.payer}</div>
+                                        <div>{bill.state === BillState.Paid ? 'Paid' : 'Pending'}</div>
+                                    </div>
+                                ))}
                             </>
                         )}
                         {reviews.length > 0 && (
@@ -266,7 +274,7 @@ const Room = () => {
                     isOpen={isOpen}
                     label="Review Room"
                     setIsOpen={setIsOpen}>
-                    <form onSubmit={handleSubmit(onSubmit)} className="text-gray-100 flex flex-col">
+                    <form onSubmit={handleSubmit(onSubmit)} className="text-gray-100 flex flex-col h-full">
                         <StarRatings
                             rating={rating}
                             starHoverColor="rgba(239,220,5,1)"
@@ -276,8 +284,8 @@ const Room = () => {
                             name='rating'
                             starDimension="25px"
                         />
-                        <div className="my-4">
-                            <textarea className="border-2 w-full h-28 p-2 bg-light-purple" placeholder="Write your review" {...register("review", { required: true })} />
+                        <div className="my-4 h-3/4">
+                            <textarea className="border-2 w-full h-full p-2 bg-light-purple" placeholder="Write your review" {...register("review", { required: true })} />
                             {errors.exampleRequired && <span>This field is required</span>}
                         </div>
                         <div className="mx-auto w-40">
