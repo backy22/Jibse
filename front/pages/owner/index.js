@@ -33,7 +33,6 @@ const OwnerDashboard = () => {
         wei.toString()
       );
       addContract.wait();
-      console.log("addContract", addContract);
     } catch (error) {
       console.log("Add Contract Error: ", error);
     } finally {

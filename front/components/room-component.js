@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Moment from "react-moment";
-import { shortenAddress } from "../utils/shorten-address";
 import { isEmptyAddress } from "../utils/address"; 
+import { UserpageLink } from "./userpage-link";
 
 const RoomComponent = ({ rent, children, showTenent = true }) => {
   if (!rent) {
@@ -28,16 +28,12 @@ const RoomComponent = ({ rent, children, showTenent = true }) => {
         </div>
         <div>
           <span className="font-bold">Owner: </span>
-          <Link href={`/user/${rent.owner}`}>
-            <a className="underline">{shortenAddress(rent.owner)}</a>
-          </Link>
+          <UserpageLink address={rent.owner} underline={true} shorten={true} />
         </div>
         {showTenent && isEmptyAddress(rent.tenant) && (
           <div>
             <span>Tenant: </span>
-            <Link href={`/user/${rent.tenant}`}>
-              <a className="underline">{shortenAddress(rent.tenant)}</a>
-            </Link>
+            <UserpageLink address={rent.tenant} underline={true} shorten={true} />
           </div>
         )}
         <Link href={`/room/${rent.contractId}`}>

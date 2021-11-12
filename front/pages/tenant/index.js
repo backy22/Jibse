@@ -8,6 +8,7 @@ import Moment from "react-moment";
 import { AuthContext } from "../../components/auth-wrapper";
 import { isSameAddresses } from "../../utils/is-same-addresses";
 import { Notify } from "../../components/notify";
+import { UserpageLink } from "../../components/userpage-link";
 
 const TenantDashboard = () => {
   const value = useContext(AuthContext);
@@ -29,10 +30,12 @@ const TenantDashboard = () => {
       }
     };
 
-    const filteredRents = value.myRents.filter((rent) =>
-      isSameAddresses(rent.tenant, value.account)
-    );
-    setMyRentsAsTenant(filteredRents);
+    if (value.myRents) {
+      const filteredRents = value.myRents.filter((rent) =>
+        isSameAddresses(rent.tenant, value.account)
+      );
+      setMyRentsAsTenant(filteredRents);
+    }
 
     const isAutoPaymentSetup = async (address) => {
       try {
@@ -45,9 +48,7 @@ const TenantDashboard = () => {
 
     const getBills = async () => {
       try {
-        const getBillsTxn = await value.paymentContract.getBillsByAddress(
-          value.account
-        );
+        const getBillsTxn = await value.paymentContract.getBillsByAddress(value.account);
         const billsArray = [];
         for (let bill of getBillsTxn) {
           billsArray.push({
@@ -62,16 +63,18 @@ const TenantDashboard = () => {
           });
         }
         setBills(billsArray);
-        console.log("billsArray", billsArray);
       } catch (error) {
         console.log("Get bill Error: ", error);
       }
     };
 
-    getMyScore();
-    getBills();
+    if (value.scoreContract) {
+      getMyScore();
+    }
 
     if (value.paymentContract) {
+      getBills();
+
       const onAutoPaymentSet = async(address) => {
           setToast({message: 'Auto Payment Set', type: 'success', id: address})
           getBills()
@@ -96,7 +99,7 @@ const TenantDashboard = () => {
           gasLimit: 1000000,
         }
       );
-      console.log("payDepositTxn", payDepositTxn);
+      console.log('payDepositTxn', payDepositTxn);
     } catch (error) {
       console.log("Pay deposit Error: ", error);
     } finally {
@@ -156,9 +159,7 @@ const TenantDashboard = () => {
               {bills.map((bill) => (
                 <div className="flex bg-gray-purple p-2 my-2 rounded items-center" key={bill.id}>
                   <div className="flex-auto">
-                    <Link href={`/user/${bill.payee}`}>
-                      <a>{bill.payee}</a>
-                    </Link>
+                    <UserpageLink address={bill.payee} />
                   </div>
                   <div className="flex-auto">
                     <Link href={`/room/${bill.contractId}`}>

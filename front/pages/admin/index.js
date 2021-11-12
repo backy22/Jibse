@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
-import Link from "next/link";
 import Button from '../../components/button';
 import { AuthContext } from "../../components/auth-wrapper";
 import { Notify } from "../../components/notify";
+import { UserpageLink } from "../../components/userpage-link";
 
 const Admin = () => {
     const value = useContext(AuthContext);
@@ -79,9 +79,7 @@ const Admin = () => {
                 {allTenants.length > 0 && allTenants.map((address) => (
                     <div className="flex bg-gray-purple p-2 my-2 rounded justify-between items-center" key={address}>
                         <div>
-                            <Link href={`/user/${address}`}>
-                                <a>{address}</a>
-                            </Link>
+                            <UserpageLink address={address} />
                         </div>
                         <div className="w-64">
                             <Button onClick={() => calculateTenantScore(address)} buttonText="Calculate Tenant Score"/>
@@ -92,9 +90,7 @@ const Admin = () => {
                 {allOwners.length > 0 && allOwners.map((address) => (
                     <div className="flex bg-gray-purple p-2 my-2 rounded justify-between items-center" key={address}>
                         <div>
-                            <Link href={`/user/${address}`}>
-                                <a>{address}</a>
-                            </Link>
+                            <UserpageLink address={address} />
                         </div>
                         <div className="w-64">
                             <Button onClick={() => calculateOwnerScore(address)} buttonText="Calculate Owner Score"/>

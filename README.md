@@ -45,10 +45,11 @@ npm run dev
 https://jibse.vercel.app/
 
 # Future plan
-- Price graph　for each room
+- Price graph of each room
 - Allow using DAI because it's stable coin
-- Introduce more robust score system
+- Introduce the robust score system
 - Introducing bidding system
+- Integration with google map
 
 # About CryptoGirls
 @backy22 and @sera0731 are from Japan and Korean, Software Engineer based in Toronto.

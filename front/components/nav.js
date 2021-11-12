@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import Button from './button'
 import { useRouter } from 'next/router'
-import { shortenAddress } from '../utils/shorten-address';
 import { ADMIN_ADDRESS } from '../utils/constants';
-import { isSameAddresses } from '../utils/is-same-addresses'; 
+import { isSameAddresses } from '../utils/is-same-addresses';
+import { UserpageLink } from './userpage-link';
 
 const Nav = ({ account, connectWalletAction, connectingWallet }) => {
   const router = useRouter()
@@ -25,9 +25,7 @@ const Nav = ({ account, connectWalletAction, connectingWallet }) => {
             <Link href={'/owner'}>Owner Dashboard</Link>
           </div>
           <div>
-            <Link href={`/user/${account}`}>
-              {shortenAddress(account)}
-            </Link>
+            <UserpageLink address={account} shorten={true} />
           </div>
         </div>
       : (

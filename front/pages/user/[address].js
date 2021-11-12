@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useRouter } from 'next/router'
 import { AuthContext } from "../../components/auth-wrapper";
 import { BillState } from "../../utils/enum";
-import Link from 'next/link'
+import { UserpageLink } from "../../components/userpage-link";
 
 const User = () => {
     const value = useContext(AuthContext);
@@ -17,7 +17,6 @@ const User = () => {
             try {
                 const scoreTxn = await value.scoreContract.getScore(address, { gasLimit: 1000000 })
                 setScore(scoreTxn.toNumber())
-                console.log('scoreTxn', scoreTxn.toNumber(), address)
             } catch (error) {
                 console.log('Get user score Error: ', error)
             }
@@ -66,9 +65,7 @@ const User = () => {
                         {bills.map((bill) => (
                             <div className="flex  bg-gray-purple p-2 my-2 rounded justify-between items-center" key={bill.billId}>
                                 <div>
-                                    <Link href={`/user/${bill.payee}`}>
-                                        <a>{bill.payee}</a>
-                                    </Link>
+                                    <UserpageLink address={bill.payee} />
                                 </div>
                                 <div>{bill.state === BillState.Paid ? 'Paid' : 'Pending'}</div>
                             </div>

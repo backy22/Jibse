@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Moment from 'react-moment';
 import Button from '../../components/button'
@@ -13,6 +12,7 @@ import { isEmptyAddress } from "../../utils/address";
 import { ethers } from 'ethers';
 import { RentState, BillState } from '../../utils/enum';
 import { Notify } from '../../components/notify';
+import { UserpageLink } from '../../components/userpage-link';
 
 const Room = () => {
     const router = useRouter()
@@ -46,7 +46,6 @@ const Room = () => {
                 { gasLimit: 1000000 }
             )
             addReview.wait();
-            console.log('addReview', addReview);
         } catch (error) {
             console.log('Add Contract Error: ', error);
         } finally {
@@ -88,11 +87,9 @@ const Room = () => {
             try {
                 const applicantTxn = await value.rentContract.getApplicants(contractId)
                 const applicantsArray = []
-                console.log('applicantTxn', applicantTxn)
                 for(let applicant of applicantTxn) {
                     applicantsArray.push(applicant)
                 }
-                console.log('applicantsArray', applicantsArray)
                 setApplicants(applicantsArray);
             } catch (error) {
                 console.log('Get applicants Error: ', error)
@@ -102,7 +99,6 @@ const Room = () => {
         const getBills = async() => {
             try {
                 const billsTxn = await value.paymentContract.getBillsByContractId(contractId, { gasLimit: 1000000 })
-                console.log('billsTxn', billsTxn)
                 const billsArray = []
                 for(let bill of billsTxn) {
                     billsArray.push({
@@ -114,7 +110,6 @@ const Room = () => {
                         state: bill.state
                     })
                 }
-                console.log('billsArray', billsArray)
                 setBills(billsArray)
             } catch (error) {
                 console.log('Get reviews Error: ', error)
@@ -132,28 +127,26 @@ const Room = () => {
                         review: review.review
                     })
                 }
-                console.log('reviewsArray', reviewsArray)
                 setReviews(reviewsArray)
             } catch (error) {
                 console.log('Get reviews Error: ', error)
             }
         }
 
-        if (value.rentContract) {
+        if (value.account && contractId && value.rentContract) {
             getRentDetail();
         }
-        if (value.rentContract && isOwner) {
+        if (contractId && value.rentContract && isOwner) {
             getApplicants();
         }
-        if (value.scoreContract) {
+        if (contractId && value.scoreContract) {
             getReviews();
-
         }
-        if (value.paymentContract) {
+        if (contractId && value.paymentContract) {
             getBills();
         }
 
-        if (value.scoreContract && value.paymentContract) {
+        if (contractId && value.scoreContract && value.paymentContract) {
             const onReviewAdded = async(id) => {
                 setToast({message: 'Review Added', type: 'success', id: id.toNumber()})
                 getReviews();
@@ -223,16 +216,12 @@ const Room = () => {
                                 </div>
                                 <div>
                                   <span className="font-bold">Owner: </span>
-                                  <Link href={`/user/${rentDetail.owner}`}>
-                                    <a className="underline">{rentDetail.owner}</a>
-                                  </Link>
+                                  <UserpageLink address={rentDetail.owner} underline={true} shorten={true} />
                                 </div>
                                 {isEmptyAddress(rentDetail.tenant) && (
                                   <div>
                                     <span>Tenant: </span>
-                                    <Link href={`/user/${rentDetail.tenant}`}>
-                                      <a className="underline">{rentDetail.tenant}</a>
-                                    </Link>
+                                    <UserpageLink address={rentDetail.tenant} underline={true} shorten={true} />
                                   </div>
                                 )}
                                 {isTenant && (
@@ -265,9 +254,7 @@ const Room = () => {
                                 <h4>Payment History</h4>
                                 {bills.map((bill) => (
                                     <div className="flex  bg-gray-purple p-2 my-2 rounded justify-between items-center" key={bill.billId}>
-                                        <Link href={`/user/${bill.payer}`}>
-                                            <a>{bill.payer}</a>
-                                        </Link>
+                                        <UserpageLink address={bill.payer} /> 
                                         <div>{bill.state === BillState.Paid ? 'Paid' : 'Pending'}</div>
                                     </div>
                                 ))}
