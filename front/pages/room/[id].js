@@ -47,7 +47,8 @@ const Room = () => {
             )
             addReview.wait();
         } catch (error) {
-            console.log('Add Contract Error: ', error);
+            console.log('Add Review Error: ', error);
+            setToast({message: 'Failed to Create Review', type: 'error', id: contractId})
         } finally {
             setIsOpen(false);
             setReviwing(false)
@@ -175,6 +176,7 @@ const Room = () => {
             console.log('accpetTxn: ', acceptTxn);
         } catch (error) {
             console.log('Accept applicant Error: ', error)
+            setToast({message: 'Failed to Accept Applicant', type: 'error', id: contractId})
         }
     }
 
@@ -185,6 +187,7 @@ const Room = () => {
             console.log('createBillTxt: ', createBillTxn);
         } catch (error) {
             console.log('Create bill Error: ', error)
+            setToast({message: 'Failed to Create Bill', type: 'error', id: contractId})
         }
     }
 

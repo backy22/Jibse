@@ -59,6 +59,7 @@ const Admin = () => {
             console.log('calculateTxn', calculateTxn)
         } catch (error) {
             console.log('Calculate Tenant Score Error: ', error)
+            setToast({message: 'Failed to Calculate Tenant Score', type: 'error', id: address})
         }
     }
 
@@ -68,6 +69,7 @@ const Admin = () => {
             console.log('calculateTxn', calculateTxn)
         } catch (error) {
             console.log('Calculate Owner Score Error: ', error)
+            setToast({message: 'Failed to Calculate Owner Score', type: 'error', id: address})
         }
     }
 

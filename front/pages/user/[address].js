@@ -56,7 +56,6 @@ const User = () => {
                 <h1 className="text-center my-12">{address}</h1>
                 <div>
                     <div>Score: {score}</div>
-                    <div>Contact: 647-123-5678</div>
                 </div>
 
                 {bills.length > 0 && (

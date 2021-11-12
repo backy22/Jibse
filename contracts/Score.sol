@@ -55,7 +55,10 @@ contract Score {
         isAdmin()
     {
         // get current score. Otherwise, default score is 500
-        uint score = getScore(_address) | 500;
+        uint score = getScore(_address);
+        if (score == 0) {
+            score = 500;
+        }
         
         // get most current payment and check it's paid or over due or not paid // get from payment contract
         
@@ -106,7 +109,10 @@ contract Score {
 
     function calculateOwnerScore(address _address) public isAdmin() {
         // get current score Otherwise, default score is 500
-        uint score = getScore(_address) | 500;
+        uint score = getScore(_address);
+        if (score == 0) {
+            score = 500;
+        }
 
         // get all succeeded contracts
         IRent.Contract[] memory contracts = rent.getContractsByAddress(_address);

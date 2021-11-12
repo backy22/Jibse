@@ -8,12 +8,14 @@ import RoomComponent from "../../components/room-component";
 import { AuthContext } from "../../components/auth-wrapper";
 import { isSameAddresses } from "../../utils/is-same-addresses";
 import { ethers } from 'ethers';
+import { Notify } from "../../components/notify";
 
 const OwnerDashboard = () => {
   const value = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const [creatingRoom, setCreatingRoom] = useState(false);
   const [myRooms, setMyRooms] = useState([]);
+  const [toast, setToast] = useState(null)
 
   const {
     control,
@@ -35,6 +37,7 @@ const OwnerDashboard = () => {
       addContract.wait();
     } catch (error) {
       console.log("Add Contract Error: ", error);
+      setToast({message: 'Failed to Create Room', type: 'error', id: 'roomError'})
     } finally {
       setIsOpen(false);
       setCreatingRoom(false);
@@ -54,6 +57,7 @@ const OwnerDashboard = () => {
 
   return (
     <div>
+      {toast && <Notify message={toast.message} type={toast.type} id={toast.id} />}
       <section className="max-w-6xl mx-auto">
         <h1 className="text-center my-12 font-black gradient-pink-green font-sans text-6xl">
           Owner Dashboard

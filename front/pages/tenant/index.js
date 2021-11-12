@@ -102,6 +102,7 @@ const TenantDashboard = () => {
       console.log('payDepositTxn', payDepositTxn);
     } catch (error) {
       console.log("Pay deposit Error: ", error);
+      setToast({message: 'Failed to Pay deposit', type: 'error', id: rent.contractId})
     } finally {
       setPayingDeposit(false);
     }
@@ -117,6 +118,7 @@ const TenantDashboard = () => {
       console.log("payBillTxn", payBillTxn);
     } catch (error) {
       console.log("Pay bill Error: ", error);
+      setToast({message: 'Failed to Pay Bill', type: 'error', id: bill.id})
     }
   }
 
@@ -128,6 +130,7 @@ const TenantDashboard = () => {
       console.log("setAutoPaymentTxn", setAutoPaymentTxn);
     } catch (error) {
       console.log("Set Auto Payment Error: ", error);
+      setToast({message: 'Failed to Set Auto Payment', type: 'error', id: value.account})
     }
   }
 
@@ -141,7 +144,6 @@ const TenantDashboard = () => {
         <div className="p-12">
           <div className="my-4">
             <div>Score: {score}</div>
-            <div>Contact: 647-123-5678</div>
           </div>
           {myRentsAsTenant.length > 0 && (
             <div className="my-4">

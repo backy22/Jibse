@@ -3,10 +3,12 @@ import Button from '../components/button';
 import RoomComponent from '../components/room-component';
 import { AuthContext } from '../components/auth-wrapper';
 import { isSameAddresses } from '../utils/is-same-addresses';
+import { Notify } from '../components/notify';
 
 export default function Home() {
   const value = useContext(AuthContext);
   const [applyingRent, setApplyingRent] = useState(null);
+  const [toast, setToast] = useState(null)
 
   const applyRent = async(contractId) => {
     try {
@@ -15,6 +17,7 @@ export default function Home() {
       await applyTxn.wait();
     } catch (error) {
       console.log('Apply Rent Error: ', error)
+      setToast({message: 'Failed to Apply Rent', type: 'error', id: contractId})
     } finally {
       setApplyingRent(null)
     }
@@ -22,6 +25,7 @@ export default function Home() {
 
   return (
     <div>
+      {toast && <Notify message={toast.message} type={toast.type} id={toast.id} />}
       <section className="max-w-6xl mx-auto">
         <h1 className="text-center my-12 font-black gradient-pink-green font-sans text-6xl">
           Rooms in Toronto 🗼
