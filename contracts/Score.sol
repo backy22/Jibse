@@ -13,7 +13,7 @@ import "./IRent.sol";
 contract Score {
 
     IRent internal rent;
-    address internal rent_address = 0x090C914388d0c303A3a7B6010e80f1274498511B; // everytime Rent contract is deployed, this should be updated.
+    address internal rent_address = 0x9A4Beec145326a757c3BA9e5033faAea1833F145; // everytime Rent contract is deployed, this should be updated.
 
     mapping(address => uint) scoreMap; // user address => score
 
@@ -34,7 +34,7 @@ contract Score {
     event OwnerScoreCalculated(address indexed owner, uint indexed score);
 
     modifier isAdmin() {
-        require(msg.sender == 0x4EbB2331E4057D5695216959729f0f4a24E1D842, "Only admin user can call this function.");
+        require(msg.sender == 0x684367aa423f4c1446d99ae234E172AE1BA2842c, "Only admin user can call this function.");
         _;
     }
 

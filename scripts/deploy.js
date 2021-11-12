@@ -9,20 +9,20 @@ const main = async () => {
   // console.log('Rent Contract deployed by:', owner.address);
 
   // Payment Contract
-  const paymentContractFactory = await hre.ethers.getContractFactory('Payment');
-  const paymentContract = await paymentContractFactory.deploy();
-  await paymentContract.deployed();
+  // const paymentContractFactory = await hre.ethers.getContractFactory('Payment');
+  // const paymentContract = await paymentContractFactory.deploy();
+  // await paymentContract.deployed();
 
-  console.log('Payment Contract deployed to:', paymentContract.address);
-  console.log('Payment Contract deployed by:', owner.address);
+  // console.log('Payment Contract deployed to:', paymentContract.address);
+  // console.log('Payment Contract deployed by:', owner.address);
 
   // Score Contract
-  const scoreContractFactory = await hre.ethers.getContractFactory('Score');
-  const scoreContract = await scoreContractFactory.deploy();
-  await scoreContract.deployed();
+  // const scoreContractFactory = await hre.ethers.getContractFactory('Score');
+  // const scoreContract = await scoreContractFactory.deploy();
+  // await scoreContract.deployed();
 
-  console.log('Score Contract deployed to:', scoreContract.address);
-  console.log('Score Contract deployed by:', owner.address);
+  // console.log('Score Contract deployed to:', scoreContract.address);
+  // console.log('Score Contract deployed by:', owner.address);
 };
 
 const runMain = async () => {
