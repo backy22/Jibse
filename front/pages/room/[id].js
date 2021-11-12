@@ -12,6 +12,8 @@ import { isSameAddresses } from '../../utils/is-same-addresses';
 import { isEmptyAddress } from "../../utils/address"; 
 import { ethers } from 'ethers';
 import { RentState, BillState } from '../../utils/enum';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Room = () => {
     const router = useRouter()
@@ -145,11 +147,44 @@ const Room = () => {
         }
         if (value.scoreContract) {
             getReviews();
+
         }
         if (value.paymentContract) {
             getBills();
         }
+
+        if (value.scoreContract && value.paymentContract) {
+            const onReviewAdded = async(id) => {
+                console.log('review added-----')
+                notify('Review Added', 'success', id.toNumber())
+                getReviews();
+            }
+
+            const onBillCreated = async(id) => {
+                console.log('bill created---')
+                notify('Bill Created', 'success', id.toNumber())
+                getBills();
+            }
+
+            value.scoreContract.on('ReviewAdded', onReviewAdded);
+            value.paymentContract.on('BillCreated', onBillCreated);
+
+            return () => {
+                value.scoreContract.off('ReviewAdded', onReviewAdded);
+                value.paymentContract.off('BillCreated', onBillCreated);
+            }
+        }
+
     }, [contractId, value.rentContract, value.scoreContract, value.paymentContract, isOwner, isTenant])
+
+    const notify = (message, type, toastId) => {
+        console.log('notify', message, type, toastId)
+        if (type === 'error') {
+          toast.error(message, { toastId });
+        } else {
+          toast.success(message, { toastId });
+        }
+    }
 
     const acceptApplicant = async(applicant) => {
         try {
@@ -173,6 +208,7 @@ const Room = () => {
 
     return (
         <div>
+            <ToastContainer autoClose={1500} />
             <section className="max-w-6xl mx-auto">
                 <h1 className="text-center my-20 font-black gradient-pink-green font-sans text-6xl">Room Dashboard</h1>
                 {rentDetail && (
@@ -211,7 +247,7 @@ const Room = () => {
                                   </div>
                                 )}
                                 {isTenant && (
-                                    <div className="mt-6 w-40">
+                                    <div className="mt-6">
                                         <Button buttonText="Review this room" onClick={openModal} />
                                     </div>
                                 )}
@@ -226,7 +262,7 @@ const Room = () => {
                             <>
                                 <h4>Applicants</h4>
                                 {applicants.map((applicant) => (
-                                    <div className="flex  bg-gray-purple p-2 m-2 rounded justify-between items-center" key={applicant}>
+                                    <div className="flex  bg-gray-purple p-2 my-2 rounded justify-between items-center" key={applicant}>
                                         <div>{applicant}</div>
                                         <div className="w-40">
                                             <Button buttonText="Accept" onClick={() => acceptApplicant(applicant)}/>
@@ -239,7 +275,7 @@ const Room = () => {
                             <>
                                 <h4>Payment History</h4>
                                 {bills.map((bill) => (
-                                    <div className="flex  bg-gray-purple p-2 m-2 rounded justify-between items-center" key={bill.billId}>
+                                    <div className="flex  bg-gray-purple p-2 my-2 rounded justify-between items-center" key={bill.billId}>
                                         <div>{bill.payer}</div>
                                         <div>{bill.state === BillState.Paid ? 'Paid' : 'Pending'}</div>
                                     </div>
@@ -249,22 +285,20 @@ const Room = () => {
                         {reviews.length > 0 && (
                             <>
                                 <h4>Reviews</h4>
-                                <div className="flex flex-col bg-gray-purple p-2 rounded">
-                                    {reviews.map((review) => (
-                                        <div key={review.reviewId}>
-                                            <div>
-                                                <StarRatings
-                                                    rating={review.star}
-                                                    starRatedColor="rgba(239,220,5,1)"
-                                                    numberOfStars={5}
-                                                    name='rating'
-                                                    starDimension="25px"
-                                                />
-                                            </div>
-                                            <div>{review.review}</div>
+                                {reviews.map((review) => (
+                                    <div className="flex flex-col bg-gray-purple p-2 my-2 rounded" key={review.reviewId}>
+                                        <div>
+                                            <StarRatings
+                                                rating={review.star}
+                                                starRatedColor="rgba(239,220,5,1)"
+                                                numberOfStars={5}
+                                                name='rating'
+                                                starDimension="25px"
+                                            />
                                         </div>
-                                    ))}
-                                </div>
+                                        <div>{review.review}</div>
+                                    </div>
+                                ))}
                             </>
                         )}
                     </>

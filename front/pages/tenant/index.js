@@ -7,6 +7,8 @@ import { RentState, BillState } from "../../utils/enum";
 import Moment from "react-moment";
 import { AuthContext } from "../../components/auth-wrapper";
 import { isSameAddresses } from "../../utils/is-same-addresses";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const TenantDashboard = () => {
   const value = useContext(AuthContext);
@@ -68,7 +70,30 @@ const TenantDashboard = () => {
 
     getMyScore();
     getBills();
+
+    if (value.paymentContract) {
+      const onAutoPaymentSet = async(address) => {
+          console.log('Auto payment set-----')
+          notify('Auto Payment Set', 'success', address)
+          getBills()
+      }
+
+      value.paymentContract.on('AutoPaymentSet', onAutoPaymentSet);
+
+      return () => {
+          value.paymentContract.off('AutoPaymentSet', onAutoPaymentSet);
+      }
+    }
   }, [value.account, value.scoreContract, value.myRents, value.rentContract]);
+
+  const notify = (message, type, toastId) => {
+    console.log('notify', message, type, toastId)
+    if (type === 'error') {
+      toast.error(message, { toastId });
+    } else {
+      toast.success(message, { toastId });
+    }
+  }
 
   async function payDeposit(rent) {
     try {
@@ -102,9 +127,9 @@ const TenantDashboard = () => {
     }
   }
 
-  async function setAutoPayment(bill) {
+  async function setAutoPayment() {
     try {
-      const setAutoPaymentTxn = await value.paymentContract.setAutoPayment(bill.payee, true, {
+      const setAutoPaymentTxn = await value.paymentContract.setAutoPayment(true, {
         gasLimit: 1000000,
       });
       console.log("setAutoPaymentTxn", setAutoPaymentTxn);
@@ -115,6 +140,7 @@ const TenantDashboard = () => {
 
   return (
     <div>
+      <ToastContainer autoClose={1500} />
       <section className="max-w-6xl mx-auto">
         <h1 className="text-center my-12 font-black gradient-pink-green font-sans text-6xl">
           Tenant Dashboard
@@ -127,18 +153,18 @@ const TenantDashboard = () => {
           {myRentsAsTenant.length > 0 && (
             <div className="my-4">
               <h4>Current Rent</h4>
-              {myRentsAsTenant.map((rent) => (
-                <div className="flex items-center" key={rent.contractId}>
-                  <RoomComponent rent={rent} />
-                </div>
-              ))}
+              <div className="grid grid-cols-3 gap-4 font-mono">
+                {myRentsAsTenant.map((rent) => (
+                  <RoomComponent rent={rent} key={rent.contractId}/>
+                ))}
+              </div>
             </div>
           )}
           {bills.length > 0 && (
             <div className="my-4">
               <h4>My bills</h4>
               {bills.map((bill) => (
-                <div className="flex bg-gray-purple p-2 rounded items-center" key={bill.id}>
+                <div className="flex bg-gray-purple p-2 my-2 rounded items-center" key={bill.id}>
                   <div className="flex-auto">
                     <Link href={`/user/${bill.payee}`}>
                       <a>{bill.payee}</a>
@@ -159,19 +185,25 @@ const TenantDashboard = () => {
                     <div className="flex-auto">Paid</div>
                   ) : (
                     <>
-                      <div className="flex-auto w-41">
-                        <Button
-                          buttonText="Pay Now"
-                          onClick={() => payBill(bill)}
-                        />
-                      </div>
-                      {!bill.isAuto && (
-                        <div className="flex-auto w-41 ml-2">
-                          <Button
-                            buttonText="Set Auto Payment"
-                            onClick={() => setAutoPayment(bill)}
-                          />
+                      {bill.isAuto ? (
+                        <div className="flex-auto w-41">
+                          Auto Payment set
                         </div>
+                      ) : (
+                        <>
+                          <div className="flex-auto w-41">
+                            <Button
+                              buttonText="Pay Now"
+                              onClick={() => payBill(bill)}
+                            />
+                          </div>
+                          <div className="flex-auto w-41 ml-2">
+                            <Button
+                              buttonText="Set Auto Payment"
+                              onClick={setAutoPayment}
+                            />
+                          </div>
+                        </>
                       )}
                     </>
                   )}

@@ -8,6 +8,8 @@ import payment from '../abi/Payment.json'
 import { RENT_CONTRACT_ADDRESS,  SCORE_CONTRACT_ADDRESS, PAYMENT_CONTRACT_ADDRESS } from '../utils/constants'
 import { RentState } from '../utils/enum';
 import { isSameAddresses } from '../utils/is-same-addresses';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const defaultContext = {
     account: null,
@@ -136,22 +138,26 @@ const AuthWrapper = ({ children }) => {
       getAllRents();
 
       const onContractCreated = async(id) => {
-        console.log('contract created-----', id)
+        console.log('contract created-----')
+        notify('Contract Created', 'success', id.toNumber())
         getAllRents();
       }
 
       const onAppliedContract = async(id, applicant) => {
         console.log('applied contract----', id, applicant)
+        notify('Contract Applied', 'success', id.toNumber())
         getAllRents();
       }
 
       const onContractLocked = async(id, tenant) => {
         console.log('contract locked----', id, tenant)
+        notify('Contract Accepted', 'success', id.toNumber())
         getAllRents();
       }
 
       const onDepositReceived = async(id, owner, tenant) => {
         console.log('deposit received-----', id, owner, tenant)
+        notify('Deposit Paid', 'success', id.toNumber())
         getAllRents();
       }
 
@@ -225,6 +231,15 @@ const AuthWrapper = ({ children }) => {
     }
   };
 
+  const notify = (message, type, toastId) => {
+    console.log('notify', message, type, toastId)
+    if (type === 'error') {
+      toast.error(message, { toastId });
+    } else {
+      toast.success(message, { toastId });
+    }
+  }
+
   return (
     <AuthContext.Provider value={{account, rentContract, scoreContract, paymentContract, allRents, myRents, appliedRents, activeRents}} >
         <Head>
@@ -232,6 +247,8 @@ const AuthWrapper = ({ children }) => {
             <meta name="description" content="Jibse" />
             <link rel="icon" href="/favicon.ico" />
         </Head>
+
+        <ToastContainer autoClose={1500} />
 
         <Nav account={account} connectWalletAction={connectWalletAction} connectingWallet={connectingWallet} />
 

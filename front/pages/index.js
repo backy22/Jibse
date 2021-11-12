@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react'
-
 import Button from '../components/button';
 import RoomComponent from '../components/room-component';
 import { AuthContext } from '../components/auth-wrapper';
@@ -7,18 +6,18 @@ import { isSameAddresses } from '../utils/is-same-addresses';
 
 export default function Home() {
   const value = useContext(AuthContext);
-  const [applyingRent, setApplyingRent] = useState(false);
+  const [applyingRent, setApplyingRent] = useState(null);
 
   const applyRent = async(contractId) => {
     try {
-      setApplyingRent(true)
+      setApplyingRent(contractId)
       const applyTxn = await value.rentContract.applyForContract(contractId);
       await applyTxn.wait();
       console.log('applyTxn: ', applyTxn);
     } catch (error) {
       console.log('Apply Rent Error: ', error)
     } finally {
-      setApplyingRent(false)
+      setApplyingRent(null)
     }
   }
 
@@ -31,7 +30,7 @@ export default function Home() {
         <div className="grid grid-cols-3 gap-4 font-mono">
           {value?.appliedRents?.length > 0 && value.appliedRents.map((rent) => (
             <RoomComponent rent={rent} showTenent={false} key={rent.contractId}>
-              <div className="self-center mt-8 w-auto">
+              <div className="self-center mt-8 w-full">
                 <Button buttonText="Applied" disabled={true} />
               </div>
             </RoomComponent>
@@ -39,12 +38,12 @@ export default function Home() {
           {value?.myRents?.length > 0 && value.myRents.map((rent) => (
             <RoomComponent rent={rent} key={rent.contractId}>
             {isSameAddresses(rent.owner, value.account) && (
-              <div className="self-center mt-8 w-41">
+              <div className="self-center mt-8 w-full">
                 <Button buttonText="You are the owner" disabled={true} />
               </div>
             )}
             {isSameAddresses(rent.tenant, value.account) && (
-              <div className="self-center mt-8 w-41">
+              <div className="self-center mt-8 w-full">
                 <Button buttonText="You are the tenant" disabled={true} />
               </div>
             )}
@@ -53,7 +52,7 @@ export default function Home() {
           {value?.activeRents?.length > 0 && value.activeRents.map((rent) => (
             <RoomComponent rent={rent} key={rent.contractId}>
               <div className="self-center my-8 w-full">
-                  <Button onClick={() => applyRent(rent.contractId)} buttonText="Apply" isLoading={applyingRent} />
+                <Button onClick={() => applyRent(rent.contractId)} buttonText="Apply" isLoading={applyingRent === rent.contractId} />
               </div>
             </RoomComponent>
           ))}

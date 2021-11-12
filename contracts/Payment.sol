@@ -44,17 +44,18 @@ contract Payment is KeeperCompatibleInterface {
     // events
     event BillCreated(uint indexed id);
     event BillPaid(uint indexed id);
+    event AutoPaymentSet(address payee);
 
     constructor() {
         rent = Rent(rentContract);
     }
     
-    function setAutoPayment(address _address, bool autoPayment) 
+    function setAutoPayment(bool autoPayment)
         external
     {
         for(uint i=0; i<autoPaymentSetups.length; i++)
         {
-            if(autoPaymentSetups[i] == _address) {
+            if(autoPaymentSetups[i] == msg.sender) {
                 if(!autoPayment) {
                     delete autoPaymentSetups[i];
                 }
@@ -62,8 +63,9 @@ contract Payment is KeeperCompatibleInterface {
             }
         }
         if(autoPayment) {
-            autoPaymentSetups.push(_address);
+            autoPaymentSetups.push(msg.sender);
         }
+        emit AutoPaymentSet(msg.sender);
     }
     
     function isAutoPaymentSetup(address _address) 

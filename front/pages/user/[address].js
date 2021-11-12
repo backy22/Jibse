@@ -25,7 +25,7 @@ const User = () => {
     return (
         <div>
             <section className="max-w-6xl mx-auto">
-                <h1 className="text-center mb-12">{address}</h1>
+                <h1 className="text-center my-12">{address}</h1>
                 <div>
                     <div>Score: {score}</div>
                     <div>Contact: 647-123-5678</div>
