@@ -55,16 +55,16 @@ const Admin = () => {
             <section className="max-w-6xl mx-auto">
                 <h1 className="text-center mb-12">Admin</h1>
                 {allTenants.length > 0 && allTenants.map((address) => (
-                    <div className="flex bg-gray-purple p-2 rounded" key={address}>
+                    <div className="flex bg-gray-purple p-2 m-2 rounded justify-between items-center" key={address}>
                         <div>{address}</div>
-                        <div className="w-96">
+                        <div className="w-64">
                             <Button onClick={() => calculateTenantScore(address)} buttonText="Calculate Tenant Score"/>
                         </div>
                     </div>
                 ))}
 
                 {allOwners.length > 0 && allOwners.map((address) => (
-                    <div className="flex bg-gray-purple p-2 rounded justify-between" key={address}>
+                    <div className="flex bg-gray-purple p-2 m-2 rounded justify-between items-center" key={address}>
                         <div>{address}</div>
                         <div className="w-64">
                             <Button onClick={() => calculateOwnerScore(address)} buttonText="Calculate Owner Score"/>

@@ -10,6 +10,7 @@ import Graph from '../../components/graph';
 import { AuthContext } from '../../components/auth-wrapper'
 import { isSameAddresses } from '../../utils/is-same-addresses';
 import { isEmptyAddress } from "../../utils/address"; 
+import { ethers } from 'ethers';
 
 const Room = () => {
     const router = useRouter()
@@ -59,7 +60,6 @@ const Room = () => {
         const getRentDetail = async() => {
             try {
                 const rentTxn = await value.rentContract.getContractById(contractId)
-                console.log('rentTxn', rentTxn)
                 setRentDetail({
                     contractId: rentTxn.contractId.toNumber(),
                     location: rentTxn.location,
@@ -67,7 +67,7 @@ const Room = () => {
                     endDate: new Date(rentTxn.endDate * 1000),
                     owner: rentTxn.owner,
                     tenant: rentTxn.tenant,
-                    price: rentTxn.price.toNumber(),
+                    price: ethers.utils.formatEther(rentTxn.price),
                     state: rentTxn.state,
                 });
                 if (isSameAddresses(rentTxn.owner, value.account)) {
@@ -224,7 +224,7 @@ const Room = () => {
                             <>
                                 <h4>Applicants</h4>
                                 {applicants.map((applicant) => (
-                                    <div className="flex  bg-gray-purple p-2 rounded justify-between" key={applicant}>
+                                    <div className="flex  bg-gray-purple p-2 m-2 rounded justify-between items-center" key={applicant}>
                                         <div>{applicant}</div>
                                         <div className="w-40">
                                             <Button buttonText="Accept" onClick={() => acceptApplicant(applicant)}/>

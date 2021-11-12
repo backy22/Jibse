@@ -27,10 +27,10 @@ const TenantDashboard = () => {
       }
     };
 
-    const filteredMyRent = value.myRents.filter((rent) =>
+    const filteredRents = value.myRents.filter((rent) =>
       isSameAddresses(rent.tenant, value.account)
     );
-    setMyRentsAsTenant(filteredMyRent);
+    setMyRentsAsTenant(filteredRents);
 
     const getBills = async () => {
       try {
@@ -63,7 +63,7 @@ const TenantDashboard = () => {
   async function payDeposit(rent) {
     try {
       setPayingDeposit(true);
-      let wei = ethers.utils.parseEther(price.toString()) // convert to wei
+      let wei = ethers.utils.parseEther(rent.price.toString()) // convert to wei
       const payDepositTxn = await value.rentContract.payDeposit(
         rent.contractId,
         {
@@ -108,15 +108,6 @@ const TenantDashboard = () => {
               {myRentsAsTenant.map((rent) => (
                 <div className="flex items-center" key={rent.contractId}>
                   <RoomComponent rent={rent} />
-                  {rent.state === RentState.Locked && (
-                    <div className="w-41">
-                      <Button
-                        buttonText="Pay Deposit"
-                        onClick={() => payDeposit(rent)}
-                        isLoading={payingDeposit}
-                      />
-                    </div>
-                  )}
                 </div>
               ))}
             </>
@@ -169,6 +160,15 @@ const TenantDashboard = () => {
               {value.appliedRents.map((rent) => (
                 <div key={rent.contractId}>
                   <RoomComponent rent={rent} />
+                  {rent.state === RentState.Locked && (
+                    <div className="w-41">
+                      <Button
+                        buttonText="Pay Deposit"
+                        onClick={() => payDeposit(rent)}
+                        isLoading={payingDeposit}
+                      />
+                    </div>
+                  )}
                 </div>
               ))}
             </>
