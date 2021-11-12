@@ -2,11 +2,13 @@ import { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import Button from '../../components/button';
 import { AuthContext } from "../../components/auth-wrapper";
+import { Notify } from "../../components/notify";
 
 const Admin = () => {
     const value = useContext(AuthContext);
     const [allTenants, setAllTenants] = useState([])
     const [allOwners, setAllOwners] = useState([])
+    const [toast, setToast] = useState(null)
 
     useEffect(() => {
         const getAllTenants = async() => {
@@ -31,7 +33,25 @@ const Admin = () => {
             getAllTenants();
             getAllOwners();
         }
-    }, [value.rentContract])
+
+        if (value.scoreContract) {
+            const onTenantScoreCalculated = async(address) => {
+                setToast({message: 'Tenant Score Calculated', type: 'success', id: address})
+            }
+
+            const onOwnerScoreCalculated = async(address) => {
+                setToast({message: 'Owner Score Calculated', type: 'success', id: address})
+            }
+
+            value.scoreContract.on('TenantScoreCalculated', onTenantScoreCalculated);
+            value.scoreContract.on('OwnerScoreCalculated', onOwnerScoreCalculated);
+
+            return () => {
+                value.scoreContract.off('TenantScoreCalculated', onTenantScoreCalculated);
+                value.scoreContract.off('OwnerScoreCalculated', onOwnerScoreCalculated);
+            }
+        }
+    }, [value.rentContract, value.scoreContract])
 
     async function calculateTenantScore(address) {
         try {
@@ -53,6 +73,7 @@ const Admin = () => {
 
     return (
         <div>
+            {toast && <Notify message={toast.message} type={toast.type} id={toast.id} />}
             <section className="max-w-6xl mx-auto">
                 <h1 className="text-center mb-12">Admin</h1>
                 {allTenants.length > 0 && allTenants.map((address) => (

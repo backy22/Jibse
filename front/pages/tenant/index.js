@@ -7,8 +7,7 @@ import { RentState, BillState } from "../../utils/enum";
 import Moment from "react-moment";
 import { AuthContext } from "../../components/auth-wrapper";
 import { isSameAddresses } from "../../utils/is-same-addresses";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Notify } from "../../components/notify";
 
 const TenantDashboard = () => {
   const value = useContext(AuthContext);
@@ -16,6 +15,7 @@ const TenantDashboard = () => {
   const [myRentsAsTenant, setMyRentsAsTenant] = useState([]);
   const [payingDeposit, setPayingDeposit] = useState(false);
   const [bills, setBills] = useState([]);
+  const [toast, setToast] = useState(null)
 
   useEffect(() => {
     const getMyScore = async () => {
@@ -73,8 +73,7 @@ const TenantDashboard = () => {
 
     if (value.paymentContract) {
       const onAutoPaymentSet = async(address) => {
-          console.log('Auto payment set-----')
-          notify('Auto Payment Set', 'success', address)
+          setToast({message: 'Auto Payment Set', type: 'success', id: address})
           getBills()
       }
 
@@ -85,15 +84,6 @@ const TenantDashboard = () => {
       }
     }
   }, [value.account, value.scoreContract, value.myRents, value.rentContract]);
-
-  const notify = (message, type, toastId) => {
-    console.log('notify', message, type, toastId)
-    if (type === 'error') {
-      toast.error(message, { toastId });
-    } else {
-      toast.success(message, { toastId });
-    }
-  }
 
   async function payDeposit(rent) {
     try {
@@ -140,7 +130,7 @@ const TenantDashboard = () => {
 
   return (
     <div>
-      <ToastContainer autoClose={1500} />
+      {toast && <Notify message={toast.message} type={toast.type} id={toast.id} />}
       <section className="max-w-6xl mx-auto">
         <h1 className="text-center my-12 font-black gradient-pink-green font-sans text-6xl">
           Tenant Dashboard

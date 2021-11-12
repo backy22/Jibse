@@ -12,8 +12,7 @@ import { isSameAddresses } from '../../utils/is-same-addresses';
 import { isEmptyAddress } from "../../utils/address"; 
 import { ethers } from 'ethers';
 import { RentState, BillState } from '../../utils/enum';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Notify } from '../../components/notify';
 
 const Room = () => {
     const router = useRouter()
@@ -29,6 +28,7 @@ const Room = () => {
     const [isTenant, setIsTenant] = useState(false)
     const [reviewing, setReviwing] = useState(false)
     const [bills, setBills] = useState([])
+    const [toast, setToast] = useState(null)
 
     const { register, handleSubmit, formState: { errors } } = useForm();
 
@@ -155,14 +155,12 @@ const Room = () => {
 
         if (value.scoreContract && value.paymentContract) {
             const onReviewAdded = async(id) => {
-                console.log('review added-----')
-                notify('Review Added', 'success', id.toNumber())
+                setToast({message: 'Review Added', type: 'success', id: id.toNumber()})
                 getReviews();
             }
 
             const onBillCreated = async(id) => {
-                console.log('bill created---')
-                notify('Bill Created', 'success', id.toNumber())
+                setToast({message: 'Bill Created', type: 'success', id: id.toNumber()})
                 getBills();
             }
 
@@ -176,15 +174,6 @@ const Room = () => {
         }
 
     }, [contractId, value.rentContract, value.scoreContract, value.paymentContract, isOwner, isTenant])
-
-    const notify = (message, type, toastId) => {
-        console.log('notify', message, type, toastId)
-        if (type === 'error') {
-          toast.error(message, { toastId });
-        } else {
-          toast.success(message, { toastId });
-        }
-    }
 
     const acceptApplicant = async(applicant) => {
         try {
@@ -208,7 +197,7 @@ const Room = () => {
 
     return (
         <div>
-            <ToastContainer autoClose={1500} />
+            {toast && <Notify message={toast.message} type={toast.type} id={toast.id} />}
             <section className="max-w-6xl mx-auto">
                 <h1 className="text-center my-20 font-black gradient-pink-green font-sans text-6xl">Room Dashboard</h1>
                 {rentDetail && (
