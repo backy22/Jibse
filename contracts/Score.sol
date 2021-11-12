@@ -56,7 +56,6 @@ contract Score {
     {
         // get current score. Otherwise, default score is 500
         uint score = getScore(_address) | 500;
-        console.log('score', score);
         
         // get most current payment and check it's paid or over due or not paid // get from payment contract
         
@@ -65,8 +64,8 @@ contract Score {
         uint amount = 0;
         uint duration = 0;
         for(uint i=0; i < contracts.length; i++) {
-            duration += contracts[i].endDate - contracts[i].startDate;
-            if (contracts[i].state == IRent.State.Active) {
+            if (contracts[i].state == IRent.State.Succeeded) {
+                duration += contracts[i].endDate - contracts[i].startDate;
                 amount += contracts[i].price;
             }
         }
@@ -75,8 +74,7 @@ contract Score {
         console.log('duration', duration);
 
         // calculate and save in the scoreMap
-        uint result = score + amount * 10 + duration * 1/1000000;
-        console.log('result', result);
+        uint result = score + amount * 1/10000000000000000 + duration * 1/1000000;
         scoreMap[_address] = result;
 
         emit TenantScoreCalculated(_address, result);
@@ -110,7 +108,7 @@ contract Score {
         // get current score Otherwise, default score is 500
         uint score = getScore(_address) | 500;
 
-        // get all contracts
+        // get all succeeded contracts
         IRent.Contract[] memory contracts = rent.getContractsByAddress(_address);
 
         // get reviews and calculate stars & duration & price
@@ -119,17 +117,22 @@ contract Score {
         uint duration = 0;
         uint priceSum = 0;
         for (uint i=0; i < contracts.length; i++) {
-            Review[] memory reviews = getReviews(contracts[i].contractId);
-            duration += contracts[i].endDate - contracts[i].startDate;
-            if (contracts[i].endDate > block.timestamp) {
-                priceSum += contracts[i].price;
-            }
-            for (uint k=0; k < reviews.length; k++) {
-                starSum += reviews[i].star;
-                count++;
+            if (contracts[i].state == IRent.State.Succeeded) {
+                duration += contracts[i].endDate - contracts[i].startDate;
+                if (contracts[i].endDate > block.timestamp) {
+                    priceSum += contracts[i].price;
+                }
+                Review[] memory contractReviews = getReviews(contracts[i].contractId);
+                for (uint k=0; k < contractReviews.length; k++) {
+                    starSum += contractReviews[i].star;
+                    count++;
+                }
             }
         }
 
+        if (count == 0) {
+            count = 1;
+        }
         uint averageStar = starSum / count;
         uint starScore = 0;
         if (averageStar > 4) {
@@ -143,7 +146,7 @@ contract Score {
         console.log('priceSum', priceSum);
 
         // calculate and save in the scoreMap
-        uint result = score + starScore + duration * 1/1000000 + priceSum * 10;
+        uint result = score + starScore + duration * 1/1000000 + priceSum * 1/10000000000000000;
         scoreMap[_address] = result;
 
         emit OwnerScoreCalculated(_address, result);

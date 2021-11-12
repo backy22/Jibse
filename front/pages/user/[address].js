@@ -14,6 +14,7 @@ const User = () => {
             try {
                 const scoreTxn = await value.scoreContract.getScore(address, { gasLimit: 1000000 })
                 setScore(scoreTxn.toNumber())
+                console.log('scoreTxn', scoreTxn.toNumber(), address)
             } catch (error) {
                 console.log('Get user score Error: ', error)
             }

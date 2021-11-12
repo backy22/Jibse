@@ -9,7 +9,7 @@ const main = async () => {
   // console.log('Rent Contract deployed to:', rentContract.address);
   // console.log('Rent Contract deployed by:', owner.address);
 
-  // const addContract = await rentContract.addContract(1000,2000,'Toronto',1)
+  // const addContract = await rentContract.addContract(1000,2000,'Toronto','10000000000000000')
   // addContract.wait();
 
   // const getAllContracts = await rentContract.getAllContracts();

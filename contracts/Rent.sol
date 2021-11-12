@@ -131,7 +131,7 @@ contract Rent is IRent {
         return result;
     }
 
-    function getAllContracts() external view returns (Contract[] memory) {
+    function getAllContracts() external override view returns (Contract[] memory) {
         return contracts;
     }
 

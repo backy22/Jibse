@@ -50,6 +50,5 @@ https://jibse.vercel.app/
 - Introduce more robust score system
 - Introducing bidding system
 
-# Member
-@backy22
-@sera0731
+# About CryptoGirls
+@backy22 and @sera0731 are from Japan and Korean, Software Engineer based in Toronto.

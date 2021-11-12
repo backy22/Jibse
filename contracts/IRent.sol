@@ -22,6 +22,7 @@ interface IRent {
         uint price; // unit : wei (1 ether == 1e18 wei)
     }
    
+   function getAllContracts() external view returns (Contract[] memory);
    function getContractById(uint id) external view returns (Contract memory);
    function getContractsByState(State state) external view returns (Contract[] memory);
    function getContractsByAddress(address _address) external view returns (Contract[] memory);
