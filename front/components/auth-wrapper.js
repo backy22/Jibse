@@ -14,6 +14,7 @@ const defaultContext = {
     rentContract: null,
     scoreContract: null,
     paymentContract: null,
+    allRents: [],
     myRents: [],
     appliedRents: [],
     activeRents: []
@@ -125,6 +126,7 @@ const AuthWrapper = ({ children }) => {
           })
         }
         setAllRents(allRentsArray)
+        defaultContext.allRents = allRentsArray
       } catch (error) {
         console.log('getAllRents Error: ', error)
       }
@@ -169,7 +171,7 @@ const AuthWrapper = ({ children }) => {
 
   // get myRents & applied rents
   useEffect(() => {
-    const filteredMyRents = allRents.filter((rent) => isSameAddresses(account, rent.tenant) || isSameAddresses(account, rent.owner))
+    const filteredMyRents = allRents.filter((rent) => (isSameAddresses(account, rent.tenant) && rent.state === RentState.Succeeded) || isSameAddresses(account, rent.owner))
     setMyRents(filteredMyRents)
     defaultContext.myRents = filteredMyRents;
 
@@ -177,7 +179,8 @@ const AuthWrapper = ({ children }) => {
       try {
           const appliedRentIdsTxn = await rentContract.getAppliedContractIds(account, { gasLimit: 1000000 })
           const appliedRentIdsArray = appliedRentIdsTxn.map((id) => id.toNumber())
-          const filteredAppliedRents = allRents.filter((rent) => appliedRentIdsArray.includes(rent.contractId))
+          const myRentIds = filteredMyRents.map((rent) => rent.contractId)
+          const filteredAppliedRents = allRents.filter((rent) => appliedRentIdsArray.includes(rent.contractId) && !myRentIds.includes(rent.contractId))
           setAppliedRents(filteredAppliedRents)
           defaultContext.appliedRents = filteredAppliedRents
       } catch (error) {
@@ -223,7 +226,7 @@ const AuthWrapper = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{account, rentContract, scoreContract, paymentContract, myRents, appliedRents, activeRents}} >
+    <AuthContext.Provider value={{account, rentContract, scoreContract, paymentContract, allRents, myRents, appliedRents, activeRents}} >
         <Head>
             <title>Jibse</title>
             <meta name="description" content="Jibse" />
