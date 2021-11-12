@@ -27,7 +27,7 @@ contract Payment is KeeperCompatibleInterface {
     }
     
     IRent internal rent;
-    address internal rentContract = 0x090C914388d0c303A3a7B6010e80f1274498511B;
+    address internal rentContract = 0x4EbB2331E4057D5695216959729f0f4a24E1D842;
     
     Bill[] bills;
     address[] autoPaymentSetups;

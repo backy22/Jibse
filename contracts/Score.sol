@@ -34,7 +34,7 @@ contract Score {
     event OwnerScoreCalculated(address indexed owner, uint indexed score);
 
     modifier isAdmin() {
-        require(msg.sender == 0x684367aa423f4c1446d99ae234E172AE1BA2842c, "Only admin user can call this function.");
+        require(msg.sender == 0x4EbB2331E4057D5695216959729f0f4a24E1D842, "Only admin user can call this function.");
         _;
     }
 
