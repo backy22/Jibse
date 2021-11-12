@@ -69,12 +69,11 @@ const OwnerDashboard = () => {
             />
           </div>
 
-          {myRooms.length > 0 &&
-            myRooms.map((rent) => (
-              <div key={rent.contractId} className="mb-5">
-                <RoomComponent rent={rent} />
-              </div>
+          <div className="grid grid-cols-3 gap-4 font-mono">
+            {myRooms.length > 0 && myRooms.map((rent) => (
+                <RoomComponent rent={rent} key={rent.contractId} />
             ))}
+          </div>
         </div>
         <Modal isOpen={isOpen} setIsOpen={setIsOpen} label="Create a Room">
           <form

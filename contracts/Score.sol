@@ -13,7 +13,7 @@ import "./IRent.sol";
 contract Score {
 
     IRent internal rent;
-    address internal rent_address = 0xfCD67F13049Df22Be4bA9315551269e531189B66; // everytime Rent contract is deployed, this should be updated.
+    address internal rent_address = 0x090C914388d0c303A3a7B6010e80f1274498511B; // everytime Rent contract is deployed, this should be updated.
 
     mapping(address => uint) scoreMap; // user address => score
 

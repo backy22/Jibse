@@ -265,7 +265,9 @@ const Room = () => {
                                 <h4>Payment History</h4>
                                 {bills.map((bill) => (
                                     <div className="flex  bg-gray-purple p-2 my-2 rounded justify-between items-center" key={bill.billId}>
-                                        <div>{bill.payer}</div>
+                                        <Link href={`/user/${bill.payer}`}>
+                                            <a>{bill.payer}</a>
+                                        </Link>
                                         <div>{bill.state === BillState.Paid ? 'Paid' : 'Pending'}</div>
                                     </div>
                                 ))}
