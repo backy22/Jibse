@@ -57,12 +57,13 @@ cd front && npm run dev
 https://jibse.vercel.app/
 
 # Future plan
-- Add price graph for each room
+- Adapt to Layer2 rollups
 - Accept stable coins
 - Introduce a robust score system
+- Improve auto-payment system
+- Add price graph for each room
 - Build a bidding system
-- Integrate with Google map
-- Improve auto payment system
+- Integrate with Google map (allow any location)
 
 # About CryptoGirls
 @backy22 and @sera0731 are from Japan and Korea, Software Engineer based in Toronto.
