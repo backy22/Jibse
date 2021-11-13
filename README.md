@@ -2,42 +2,55 @@
 This project is submitted to [BlockHack Hackathon 2021 (Nov 8-14)](https://blockhack-hackathon.devpost.com/)
 
 # Jibse
-The platform where the user can post and rent the house. Also they can transfer deposit and set auto transfer using cryptocurrency.
+It helps tenants and owners make a worry-free lease contract without knowing each other.  
+  
+🙋‍♀️ As an owner,  
+- I can post a place I want to rent out at any price and for any period I want using cryptocurrency.
+- I can check the transaction histories of applicants to prevent fraud.
+- I can easily check the payment status of current tenants.
+  
+🙋‍♂️ As a tenant,  
+- I can ensure if the owner is a trustworthy person by reading reviews of rooms.
+- I can pay a deposit and rent using cryptocurrency.
+- I can get evidence on the network without having to write a separate contract.
+- I can set up auto-payment.
+
+# Inspiration ⚡️
+We are foreigners who have recently settled in Toronto. It was unnecessarily difficult for us to find a place to rent because of : 
+- **Uncertain identity of owners** on existing platforms like Kijiji, Craigslist
+- **Shortage of local currency holdings**
+- **Lack of proofs to prove identities** such as credit scores, income, and reference in Canada
 
 # What this platfrom offers
-- transparency of renting market reliability of both owner and tenant by publishing all transfer
-- convenient and cheaper transfer, espcially renting from overseas before moving in
-- equality of background check by using own payment history instead of using bank credit score, income proof, reference etc
-
-# Inspiration
-We are from outside of Canada and have struggled to find a good place because
-- there was no way to check if the ower is reliable or not on existing platform like Kijiji, Craigslist
-- we always had to exchange money as we didn't have much Canada dollers
-- we were not able to rent proper place since we don't have credit score, income, reference in Canada
+- **Transparency** and **reliability** of both owner and tenant by publishing all transactions into the Ethereum network
+- **Convenience** and **practicality** by using cryptocurrencies especially paying a deposit from overseas before moving into a country
+- **Equality** by giving the "ownership" of payment history to the user on Jibse to determine reliability instead of relying on bank credit score, income proof, reference, etc
 
 # Tech Stack
-## SmartContract
-- Build on Ethereum. There are Rent Contract, Payment Contract, Score Contract
-- Chainlink to manage auto transfer
+## Smart contract
+- Solidity
+- Chainlink Upkeep
+- Ethereum Kovan network
 
 ## Frontend
 - React
-- NextJs
+- Next.js
 - Tailwind CSS
 
 # Get started
-run test
+Run smart contract tests by :
 ```
 npx hardhat run scripts/run.js
 ```
 
-deploy testnet
+Deploy testnet by :
 ```
 npx hardhat run scripts/deploy.js --network kovan
 ```
 
-run front (under front directory)
+Run a frontend server by :
 ```
+cd frontend
 npm run dev
 ```
 
@@ -52,4 +65,4 @@ https://jibse.vercel.app/
 - Integration with google map
 
 # About CryptoGirls
-@backy22 and @sera0731 are from Japan and Korean, Software Engineer based in Toronto.
+@backy22 and @sera0731 are from Japan and Korea, Software Engineer based in Toronto.
