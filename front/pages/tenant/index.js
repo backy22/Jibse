@@ -80,10 +80,17 @@ const TenantDashboard = () => {
           getBills()
       }
 
+      const onBillPaid = async(id) => {
+        setToast({message: 'Bill Paid', type: 'success', id: id})
+        getBills()
+      }
+
       value.paymentContract.on('AutoPaymentSet', onAutoPaymentSet);
+      value.paymentContract.on('BillPaid', onBillPaid);
 
       return () => {
           value.paymentContract.off('AutoPaymentSet', onAutoPaymentSet);
+          value.paymentContract.off('BillPaid', onBillPaid);
       }
     }
   }, [value.account, value.scoreContract, value.myRents, value.rentContract]);
