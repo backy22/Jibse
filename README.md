@@ -1,8 +1,8 @@
 # Project
 This project is submitted to [BlockHack Hackathon 2021 (Nov 8-14)](https://blockhack-hackathon.devpost.com/)
 
-# Jibse
-It helps tenants and owners make a worry-free lease contract without knowing each other.  
+# Jibse 🏠
+Jibse helps tenants and owners make a worry-free lease contract without knowing each other.  
   
 🙋‍♀️ As an owner,  
 - I can post a place I want to rent out at any price and for any period I want using cryptocurrency.
@@ -50,19 +50,19 @@ npx hardhat run scripts/deploy.js --network kovan
 
 Run a frontend server by :
 ```
-cd frontend
-npm run dev
+cd front && npm run dev
 ```
 
 # Live
 https://jibse.vercel.app/
 
 # Future plan
-- Price graph of each room
-- Allow using DAI because it's stable coin
-- Introduce the robust score system
-- Introducing bidding system
-- Integration with google map
+- Add price graph for each room
+- Accept stable coins
+- Introduce a robust score system
+- Build a bidding system
+- Integrate with Google map
+- Improve auto payment system
 
 # About CryptoGirls
 @backy22 and @sera0731 are from Japan and Korea, Software Engineer based in Toronto.
