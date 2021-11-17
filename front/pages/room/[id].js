@@ -194,7 +194,7 @@ const Room = () => {
     return (
         <div>
             {toast && <Notify message={toast.message} type={toast.type} id={toast.id} />}
-            <section className="max-w-6xl mx-auto">
+            <section className="max-w-6xl mx-auto pb-12">
                 <h1 className="text-center my-20 font-black gradient-pink-green font-sans text-6xl">Room Dashboard</h1>
                 {rentDetail && (
                     <>
@@ -227,7 +227,7 @@ const Room = () => {
                                     <UserpageLink address={rentDetail.tenant} underline={true} shorten={true} />
                                   </div>
                                 )}
-                                {isTenant && (
+                                {isTenant && rentDetail.state === RentState.Succeeded && (
                                     <div className="mt-6">
                                         <Button buttonText="Review this room" onClick={openModal} />
                                     </div>

@@ -76,7 +76,7 @@ const Admin = () => {
     return (
         <div>
             {toast && <Notify message={toast.message} type={toast.type} id={toast.id} />}
-            <section className="max-w-6xl mx-auto">
+            <section className="max-w-6xl mx-auto pb-12">
                 <h1 className="text-center mb-12">Admin</h1>
                 {allTenants.length > 0 && allTenants.map((address) => (
                     <div className="flex bg-gray-purple p-2 my-2 rounded justify-between items-center" key={address}>

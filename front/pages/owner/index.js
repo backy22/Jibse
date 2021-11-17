@@ -58,7 +58,7 @@ const OwnerDashboard = () => {
   return (
     <div>
       {toast && <Notify message={toast.message} type={toast.type} id={toast.id} />}
-      <section className="max-w-6xl mx-auto">
+      <section className="max-w-6xl mx-auto pb-12">
         <h1 className="text-center my-12 font-black gradient-pink-green font-sans text-6xl">
           Owner Dashboard
         </h1>
