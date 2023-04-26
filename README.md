@@ -56,6 +56,9 @@ cd front && npm run dev
 # Live
 https://jibse.vercel.app/
 
+# Presentation
+https://www.canva.com/design/DAEv80oDZDM/UGenvn_QGxD0RlYk_AgAcg/view?website#2:crypto-girls
+
 # Future plan
 - Adapt to Layer2 rollups
 - Accept stable coins
